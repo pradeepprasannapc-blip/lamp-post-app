@@ -64,13 +64,17 @@ def get_image_base64(filepath):
             return base64.b64encode(img_file.read()).decode()
     return None
 
-# --- Session States (මතක තබා ගැනීමේ සැකසුම්) ---
+# --- Session States ---
 if 'products' not in st.session_state:
     st.session_state.products = load_data()
 if 'logged_in' not in st.session_state:
     st.session_state.logged_in = False
-# මෙනුව ඉබේ මාරු කිරීමට අවශ්‍ය සැකසුම
 if 'menu_selection' not in st.session_state:
+    st.session_state.menu_selection = "භාණ්ඩ බලන්න (Home)"
+
+# Logout Error එක නැති කිරීමට හදපු නිවැරදි Callback Function එක
+def logout_user():
+    st.session_state.logged_in = False
     st.session_state.menu_selection = "භාණ්ඩ බලන්න (Home)"
 
 # --- App UI and Navigation ---
@@ -96,8 +100,23 @@ st.markdown(header_html, unsafe_allow_html=True)
 
 
 menu = ["භාණ්ඩ බලන්න (Home)", "කළමනාකරුට පමණයි (Admin)"]
-# මෙනුව session state එකට සම්බන්ධ කර ඇත
 choice = st.sidebar.selectbox("මෙනුව තෝරන්න", menu, key="menu_selection")
+
+# --- Sidebar Login (පැත්තෙන් Password ගැසීමට) ---
+if choice == "කළමනාකරුට පමණයි (Admin)" and not st.session_state.logged_in:
+    st.sidebar.markdown("---")
+    st.sidebar.info("කරුණාකර ඇතුලත් වීමට මුරපදය ලබා දෙන්න.")
+    
+    with st.sidebar.form("login_form"):
+        password = st.text_input("මුරපදය (Password)", type="password")
+        submit_login = st.form_submit_button("ඇතුලත් වන්න (Enter)")
+        
+        if submit_login:
+            if password == ADMIN_PASSWORD:
+                st.session_state.logged_in = True
+                st.rerun() 
+            else:
+                st.sidebar.error("මුරපදය වැරදියි! නැවත උත්සාහ කරන්න.")
 
 # ---------------------------------------------------------
 # 1. පාරිභෝගිකයින්ට පෙනෙන පිටුව
@@ -150,36 +169,22 @@ if choice == "භාණ්ඩ බලන්න (Home)":
                     st.markdown(f"[📞 කෝල් එකක් ගන්න](tel:{CALL_NUM})")
 
 # ---------------------------------------------------------
-# 2. Admin Panel (Auto Login සහ Auto Home ක්‍රමය සහිතව)
+# 2. Admin Panel (Auto Login සහ Auto Home ක්‍රමය)
 # ---------------------------------------------------------
 elif choice == "කළමනාකරුට පමණයි (Admin)":
-    st.header("Admin Panel (භාණ්ඩ කළමනාකරණය)")
     
-    # ලොග් වී නොමැති නම් Password ඇසීම
+    # ලොග් වී නොමැති නම් උපදෙස් ලබා දීම
     if not st.session_state.logged_in:
-        st.info("කරුණාකර ඇතුලත් වීමට මුරපදය ලබා දෙන්න.")
-        
-        # Form එකක් භාවිතා කර ඇති බැවින් Enter එබූ වහාම ක්‍රියාත්මක වේ
-        with st.form("login_form"):
-            password = st.text_input("මුරපදය (Password)", type="password")
-            submit_login = st.form_submit_button("ඇතුලත් වන්න (Enter)")
-            
-            if submit_login:
-                if password == ADMIN_PASSWORD:
-                    st.session_state.logged_in = True
-                    st.rerun() 
-                else:
-                    st.error("මුරපදය වැරදියි! නැවත උත්සාහ කරන්න.")
+        st.info("👈 කරුණාකර වම් පසින් ඇති මෙනුවෙන් මුරපදය (Password) ඇතුලත් කර 'Enter' ඔබන්න.")
                 
     # ලොග් වී ඇත්නම් Admin Panel එක පෙන්වීම
     else:
-        # Logout බට්න් එක (එබූ වහාම Home එකට යයි)
+        st.header("Admin Panel (භාණ්ඩ කළමනාකරණය)")
+        
+        # Logout බට්න් එක (දැන් Error එකක් එන්නේ නැත)
         col1, col2 = st.columns([3, 1])
         with col2:
-            if st.button("ඉවත් වන්න (Logout)"):
-                st.session_state.logged_in = False
-                st.session_state.menu_selection = "භාණ්ඩ බලන්න (Home)" # Home එකට මාරු කිරීම
-                st.rerun()
+            st.button("ඉවත් වන්න (Logout)", on_click=logout_user)
                 
         st.success("සාර්ථකයි! ඔබට දැන් භාණ්ඩ ඇතුලත් කළ හැක.")
         

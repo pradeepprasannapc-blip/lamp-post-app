@@ -9,7 +9,6 @@ st.set_page_config(page_title="Chathura Group", page_icon="✨", layout="centere
 # --- Custom CSS for Premium Borders with Colors ---
 st.markdown("""
 <style>
-    /* සාමාන්‍ය බෝඩර් වල හැඩය (Product Cards සඳහා) */
     div[data-testid="stVerticalBlockBorderWrapper"] {
         border-radius: 15px !important;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2) !important;
@@ -17,7 +16,6 @@ st.markdown("""
         border: 2px solid #5D6D7E !important; 
     }
     
-    /* Header එක සඳහා වෙනම පෙනුමක් (පින්තූරය සහ නම එකම කොටුවක) */
     .header-card {
         border: 3px solid #5DADE2; 
         border-radius: 20px;
@@ -28,7 +26,6 @@ st.markdown("""
         background-color: rgba(93, 173, 226, 0.05);
     }
     
-    /* Sub-header (නවතම products) සඳහා වෙනම පෙනුමක් (රන්වන් පැහැති) */
     .subheader-card {
         border: 3px solid #F4D03F;
         border-radius: 15px;
@@ -67,15 +64,18 @@ def get_image_base64(filepath):
             return base64.b64encode(img_file.read()).decode()
     return None
 
-# Session States (Login එක මතක තියාගන්න)
+# --- Session States (මතක තබා ගැනීමේ සැකසුම්) ---
 if 'products' not in st.session_state:
     st.session_state.products = load_data()
 if 'logged_in' not in st.session_state:
     st.session_state.logged_in = False
+# මෙනුව ඉබේ මාරු කිරීමට අවශ්‍ය සැකසුම
+if 'menu_selection' not in st.session_state:
+    st.session_state.menu_selection = "භාණ්ඩ බලන්න (Home)"
 
 # --- App UI and Navigation ---
 
-# 1. Header පින්තූරය සහ නම එකම HTML බෝඩර් එකක් (header-card) ඇතුළත
+# Header පින්තූරය සහ නම
 header_file = "header.png" if os.path.exists("header.png") else "header.jpg"
 header_b64 = get_image_base64(header_file)
 
@@ -96,7 +96,8 @@ st.markdown(header_html, unsafe_allow_html=True)
 
 
 menu = ["භාණ්ඩ බලන්න (Home)", "කළමනාකරුට පමණයි (Admin)"]
-choice = st.sidebar.selectbox("මෙනුව තෝරන්න", menu)
+# මෙනුව session state එකට සම්බන්ධ කර ඇත
+choice = st.sidebar.selectbox("මෙනුව තෝරන්න", menu, key="menu_selection")
 
 # ---------------------------------------------------------
 # 1. පාරිභෝගිකයින්ට පෙනෙන පිටුව
@@ -149,7 +150,7 @@ if choice == "භාණ්ඩ බලන්න (Home)":
                     st.markdown(f"[📞 කෝල් එකක් ගන්න](tel:{CALL_NUM})")
 
 # ---------------------------------------------------------
-# 2. Admin Panel (නව Login/Logout පද්ධතිය සහිතව)
+# 2. Admin Panel (Auto Login සහ Auto Home ක්‍රමය සහිතව)
 # ---------------------------------------------------------
 elif choice == "කළමනාකරුට පමණයි (Admin)":
     st.header("Admin Panel (භාණ්ඩ කළමනාකරණය)")
@@ -157,23 +158,27 @@ elif choice == "කළමනාකරුට පමණයි (Admin)":
     # ලොග් වී නොමැති නම් Password ඇසීම
     if not st.session_state.logged_in:
         st.info("කරුණාකර ඇතුලත් වීමට මුරපදය ලබා දෙන්න.")
-        password = st.text_input("මුරපදය (Password)", type="password")
         
-        # Enter බට්න් එක
-        if st.button("ඇතුලත් වන්න (Enter)"):
-            if password == ADMIN_PASSWORD:
-                st.session_state.logged_in = True
-                st.rerun() # පිටුව Refresh කර Admin Panel එක පෙන්වයි
-            else:
-                st.error("මුරපදය වැරදියි! නැවත උත්සාහ කරන්න.")
+        # Form එකක් භාවිතා කර ඇති බැවින් Enter එබූ වහාම ක්‍රියාත්මක වේ
+        with st.form("login_form"):
+            password = st.text_input("මුරපදය (Password)", type="password")
+            submit_login = st.form_submit_button("ඇතුලත් වන්න (Enter)")
+            
+            if submit_login:
+                if password == ADMIN_PASSWORD:
+                    st.session_state.logged_in = True
+                    st.rerun() 
+                else:
+                    st.error("මුරපදය වැරදියි! නැවත උත්සාහ කරන්න.")
                 
     # ලොග් වී ඇත්නම් Admin Panel එක පෙන්වීම
     else:
-        # Logout බට්න් එක
+        # Logout බට්න් එක (එබූ වහාම Home එකට යයි)
         col1, col2 = st.columns([3, 1])
         with col2:
             if st.button("ඉවත් වන්න (Logout)"):
                 st.session_state.logged_in = False
+                st.session_state.menu_selection = "භාණ්ඩ බලන්න (Home)" # Home එකට මාරු කිරීම
                 st.rerun()
                 
         st.success("සාර්ථකයි! ඔබට දැන් භාණ්ඩ ඇතුලත් කළ හැක.")

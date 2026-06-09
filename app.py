@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import json
 import os
 import base64
@@ -71,11 +72,16 @@ if 'logged_in' not in st.session_state:
     st.session_state.logged_in = False
 if 'menu_selection' not in st.session_state:
     st.session_state.menu_selection = "භාණ්ඩ බලන්න (Home)"
+if 'editing_index' not in st.session_state:
+    st.session_state.editing_index = None
+if 'close_sidebar' not in st.session_state:
+    st.session_state.close_sidebar = False
 
-# Logout Error එක නැති කිරීමට හදපු නිවැරදි Callback Function එක
+# Logout Function
 def logout_user():
     st.session_state.logged_in = False
     st.session_state.menu_selection = "භාණ්ඩ බලන්න (Home)"
+    st.session_state.editing_index = None
 
 # --- App UI and Navigation ---
 
@@ -98,7 +104,6 @@ else:
     """
 st.markdown(header_html, unsafe_allow_html=True)
 
-
 menu = ["භාණ්ඩ බලන්න (Home)", "කළමනාකරුට පමණයි (Admin)"]
 choice = st.sidebar.selectbox("මෙනුව තෝරන්න", menu, key="menu_selection")
 
@@ -114,6 +119,7 @@ if choice == "කළමනාකරුට පමණයි (Admin)" and not st.se
         if submit_login:
             if password == ADMIN_PASSWORD:
                 st.session_state.logged_in = True
+                st.session_state.close_sidebar = True # ලොග් වූ වහාම Sidebar එක වැසීමට
                 st.rerun() 
             else:
                 st.sidebar.error("මුරපදය වැරදියි! නැවත උත්සාහ කරන්න.")
@@ -169,26 +175,42 @@ if choice == "භාණ්ඩ බලන්න (Home)":
                     st.markdown(f"[📞 කෝල් එකක් ගන්න](tel:{CALL_NUM})")
 
 # ---------------------------------------------------------
-# 2. Admin Panel (Auto Login සහ Auto Home ක්‍රමය)
+# 2. Admin Panel
 # ---------------------------------------------------------
 elif choice == "කළමනාකරුට පමණයි (Admin)":
     
-    # ලොග් වී නොමැති නම් උපදෙස් ලබා දීම
+    # Auto Close Sidebar JS Script (ලොග් වූ වහාම ක්‍රියාත්මක වේ)
+    if st.session_state.close_sidebar:
+        components.html(
+            """
+            <script>
+                var isMobile = window.innerWidth < 768;
+                if(isMobile) {
+                    var closeBtn = window.parent.document.querySelector('[data-testid="baseButton-headerNoPadding"]');
+                    if(closeBtn) { closeBtn.click(); }
+                }
+            </script>
+            """,
+            height=0,
+            width=0,
+        )
+        st.session_state.close_sidebar = False
+    
     if not st.session_state.logged_in:
         st.info("👈 කරුණාකර වම් පසින් ඇති මෙනුවෙන් මුරපදය (Password) ඇතුලත් කර 'Enter' ඔබන්න.")
                 
-    # ලොග් වී ඇත්නම් Admin Panel එක පෙන්වීම
     else:
         st.header("Admin Panel (භාණ්ඩ කළමනාකරණය)")
         
-        # Logout බට්න් එක (දැන් Error එකක් එන්නේ නැත)
         col1, col2 = st.columns([3, 1])
         with col2:
             st.button("ඉවත් වන්න (Logout)", on_click=logout_user)
                 
         st.success("සාර්ථකයි! ඔබට දැන් භාණ්ඩ ඇතුලත් කළ හැක.")
         
+        # --- Add New Product Form ---
         with st.form("add_product_form", clear_on_submit=True):
+            st.subheader("➕ අලුත් භාණ්ඩයක් ඇතුලත් කරන්න")
             p_name = st.text_input("පහන් කණුවේ නම")
             p_desc = st.text_area("විස්තරය")
             p_price = st.text_input("මිල (රු.)")
@@ -216,12 +238,61 @@ elif choice == "කළමනාකරුට පමණයි (Admin)":
                     st.error("කරුණාකර නම සහ මිල අනිවාර්යයෙන් ඇතුලත් කරන්න.")
                     
         st.write("---")
-        st.subheader("දැනට ඇති භාණ්ඩ ඉවත් කරන්න")
+        st.subheader("දැනට ඇති භාණ්ඩ කළමනාකරණය (Edit & Delete)")
+        
+        # --- Edit Product Form (පෙන්වන්නේ Edit බොත්තම එබුවහොත් පමණි) ---
+        if st.session_state.editing_index is not None:
+            idx = st.session_state.editing_index
+            if idx < len(st.session_state.products):
+                edit_prod = st.session_state.products[idx]
+                st.info(f"✏️ ඔබ දැන් වෙනස් කරන්නේ: **{edit_prod['name']}**")
+                
+                with st.form("edit_product_form"):
+                    e_name = st.text_input("නම", value=edit_prod['name'])
+                    e_desc = st.text_area("විස්තරය", value=edit_prod['desc'])
+                    e_price = st.text_input("මිල (රු.)", value=edit_prod['price'])
+                    e_image = st.file_uploader("අලුත් ඡායාරූපයක් අවශ්‍ය නම් පමණක් තෝරන්න (නැත්නම් පරණ එකම තියේවි)", type=["jpg", "png", "jpeg"])
+
+                    colA, colB = st.columns(2)
+                    submit_edit = colA.form_submit_button("සේව් කරන්න (Save)")
+                    cancel_edit = colB.form_submit_button("අවලංගු කරන්න (Cancel)")
+
+                    if submit_edit:
+                        if e_name and e_price:
+                            img_b64 = edit_prod['image'] 
+                            if e_image is not None:
+                                img_b64 = base64.b64encode(e_image.read()).decode()
+
+                            st.session_state.products[idx] = {
+                                "name": e_name,
+                                "desc": e_desc,
+                                "price": e_price,
+                                "image": img_b64
+                            }
+                            save_data(st.session_state.products)
+                            st.session_state.editing_index = None
+                            st.success("සාර්ථකව වෙනස් කරන ලදී!")
+                            st.rerun()
+                        else:
+                            st.error("නම සහ මිල අනිවාර්යයෙන් ඇතුලත් කරන්න.")
+
+                    if cancel_edit:
+                        st.session_state.editing_index = None
+                        st.rerun()
+        
+        # --- List of Existing Products ---
         for i, p in enumerate(st.session_state.products):
             with st.container(border=True): 
-                col1, col2 = st.columns([3, 1])
-                col1.write(p['name'])
-                if col2.button("මකන්න", key=f"del_{i}"):
+                col1, col2, col3 = st.columns([2, 1, 1])
+                col1.write(f"**{p['name']}**")
+                
+                if col2.button("✏️ Edit", key=f"edit_{i}"):
+                    st.session_state.editing_index = i
+                    st.rerun()
+                    
+                if col3.button("🗑️ Delete", key=f"del_{i}"):
+                    if st.session_state.editing_index == i:
+                        st.session_state.editing_index = None
                     st.session_state.products.pop(i)
                     save_data(st.session_state.products)
                     st.rerun()

@@ -4,7 +4,8 @@ import os
 import base64
 
 # --- App Configuration ---
-st.set_page_config(page_title="අපේ පහන් කණු", page_icon="💡", layout="centered")
+# ඇප් එකේ උඩින් පේන නමත් Chathura Group කියලා වෙනස් කළා
+st.set_page_config(page_title="Chathura Group", page_icon="✨", layout="centered")
 
 # --- Settings (මෙතන ඔයාගේ විස්තර වෙනස් කරන්න) ---
 DATA_FILE = "products.json"
@@ -45,7 +46,9 @@ if os.path.exists(image_path):
 elif os.path.exists("header.jpg"):
     st.image("header.jpg", use_column_width=True)
 
-st.title("💡 අපේ පහන් කණු ව්‍යාපාරය (Chathura Group)")
+# අලුත් ප්‍රධාන නාමය (ලස්සනට මැදින් පෙන්වීමට සකසා ඇත)
+st.markdown("<h1 style='text-align: center; font-family: serif;'>✨ CHATHURA GROUP 🏛️</h1>", unsafe_allow_html=True)
+st.markdown("<hr style='margin-top: -10px; margin-bottom: 20px;'>", unsafe_allow_html=True)
 
 menu = ["භාණ්ඩ බලන්න (Home)", "කළමනාකරුට පමණයි (Admin)"]
 choice = st.sidebar.selectbox("මෙනුව තෝරන්න", menu)
@@ -54,7 +57,10 @@ choice = st.sidebar.selectbox("මෙනුව තෝරන්න", menu)
 # 1. පාරිභෝගිකයින්ට පෙනෙන පිටුව (Public View)
 # ---------------------------------------------------------
 if choice == "භාණ්ඩ බලන්න (Home)":
-    st.header("අපගේ නවතම පහන් කණු වර්ග")
+    
+    # අලුත් උප නාමය (ලස්සනට මැදින් පෙන්වීමට සකසා ඇත)
+    st.markdown("<h2 style='text-align: center; font-family: sans-serif; color: #2E86C1;'>💎 අපගේ නවතම PRODUCTS 🛍️</h2>", unsafe_allow_html=True)
+    st.write("") # පොඩි හිඩසක්
     
     if not st.session_state.products:
         st.info("දැනට භාණ්ඩ කිසිවක් ඇතුලත් කර නොමැත. කරුණාකර පසුව පැමිණෙන්න.")
@@ -82,7 +88,6 @@ if choice == "භාණ්ඩ බලන්න (Home)":
             wa_b64 = get_image_base64("whatsapp_button.png")
             wa_msg = f"මට මේ product එක ගැන දැනගන්න ඕනි: {p['name']}"
             if wa_b64:
-                # කොළ පාට වක්‍ර බෝඩර් එකක් එකතු කර ඇත (border: 2px solid #25D366; border-radius: 25px;)
                 wa_html = f'<a href="https://wa.me/{WHATSAPP_NUM}?text={wa_msg}" target="_blank" style="display:block; width:100%; text-align:center;"><img src="data:image/png;base64,{wa_b64}" style="width:100%; height:80px; object-fit:contain; border: 2px solid #25D366; border-radius: 25px; padding: 8px; box-sizing: border-box;"></a>'
                 st.markdown(wa_html, unsafe_allow_html=True)
             else:
@@ -91,7 +96,6 @@ if choice == "භාණ්ඩ බලන්න (Home)":
         with col2:
             call_b64 = get_image_base64("call_now_1.png")
             if call_b64:
-                # තැඹිලි පාට වක්‍ර බෝඩර් එකක් එකතු කර ඇත (border: 2px solid #FF8C00; border-radius: 25px;)
                 call_html = f'<a href="tel:{CALL_NUM}" style="display:block; width:100%; text-align:center;"><img src="data:image/png;base64,{call_b64}" style="width:100%; height:80px; object-fit:contain; border: 2px solid #FF8C00; border-radius: 25px; padding: 8px; box-sizing: border-box;"></a>'
                 st.markdown(call_html, unsafe_allow_html=True)
             else:

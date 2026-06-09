@@ -179,27 +179,30 @@ if choice == "භාණ්ඩ බලන්න (Home)":
 # ---------------------------------------------------------
 elif choice == "කළමනාකරුට පමණයි (Admin)":
     
-    # නව සහ වඩාත් සාර්ථක Auto Close Sidebar JS Script එක
+    # නව සහ වඩාත් සාර්ථක Auto Close Sidebar JS Script එක (Time delay එකක් සහිතව)
     if st.session_state.close_sidebar:
         components.html(
             """
             <script>
-                var doc = window.parent.document;
-                
-                // ක්‍රමය 1: Escape බොත්තම එබීම අනුකරණය කිරීම
-                var escEvent = new KeyboardEvent('keydown', {
-                    key: 'Escape', code: 'Escape', keyCode: 27, which: 27, bubbles: true
-                });
-                doc.dispatchEvent(escEvent);
-                
-                // ක්‍රමය 2: Close sidebar බොත්තම හොයාගෙන click කිරීම (ෆෝන් වලට වඩාත් ගැලපේ)
-                var buttons = doc.querySelectorAll('button');
-                for (var i = 0; i < buttons.length; i++) {
-                    if (buttons[i].getAttribute('aria-label') === 'Close sidebar') {
-                        buttons[i].click();
-                        break;
+                // තත්පර බාගයක් (500ms) පරක්කු කරලා තමයි Sidebar එක වහන්නේ
+                setTimeout(function() {
+                    var doc = window.parent.document;
+                    
+                    // ක්‍රමය 1: Close sidebar බොත්තම හොයාගෙන click කිරීම
+                    var buttons = doc.querySelectorAll('button');
+                    for (var i = 0; i < buttons.length; i++) {
+                        if (buttons[i].getAttribute('aria-label') === 'Close sidebar') {
+                            buttons[i].click();
+                            return;
+                        }
                     }
-                }
+                    
+                    // ක්‍රමය 2: ෆෝන් වලදී Sidebar එකට පිටින් තියෙන අඳුරු පසුබිම Click කිරීම
+                    var overlay = doc.querySelector('[data-testid="stSidebar"] + div');
+                    if (overlay) {
+                        overlay.click();
+                    }
+                }, 500);
             </script>
             """,
             height=0,

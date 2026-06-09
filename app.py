@@ -1,5 +1,4 @@
 import streamlit as st
-import streamlit.components.v1 as components
 import json
 import os
 import base64
@@ -70,19 +69,14 @@ if 'products' not in st.session_state:
     st.session_state.products = load_data()
 if 'logged_in' not in st.session_state:
     st.session_state.logged_in = False
-if 'password_verified' not in st.session_state:
-    st.session_state.password_verified = False # අලුතින් දැමූ එක
 if 'menu_selection' not in st.session_state:
     st.session_state.menu_selection = "භාණ්ඩ බලන්න (Home)"
 if 'editing_index' not in st.session_state:
     st.session_state.editing_index = None
-if 'close_sidebar' not in st.session_state:
-    st.session_state.close_sidebar = False
 
 # Logout Function
 def logout_user():
     st.session_state.logged_in = False
-    st.session_state.password_verified = False
     st.session_state.menu_selection = "භාණ්ඩ බලන්න (Home)"
     st.session_state.editing_index = None
 
@@ -107,37 +101,10 @@ else:
     """
 st.markdown(header_html, unsafe_allow_html=True)
 
+# මෙනුව
 menu = ["භාණ්ඩ බලන්න (Home)", "කළමනාකරුට පමණයි (Admin)"]
 choice = st.sidebar.selectbox("මෙනුව තෝරන්න", menu, key="menu_selection")
 
-# --- Sidebar Login (පියවර 2කින් සමන්විත අලුත් ක්‍රමය) ---
-if choice == "කළමනාකරුට පමණයි (Admin)" and not st.session_state.logged_in:
-    st.sidebar.markdown("---")
-    
-    # පියවර 1: Password එක ඇතුලත් කිරීම
-    if not st.session_state.password_verified:
-        st.sidebar.info("කරුණාකර ඇතුලත් වීමට මුරපදය ලබා දෙන්න.")
-        with st.sidebar.form("login_form"):
-            password = st.text_input("මුරපදය (Password)", type="password")
-            submit_login = st.form_submit_button("Enter")
-            
-            if submit_login:
-                if password == ADMIN_PASSWORD:
-                    st.session_state.password_verified = True
-                    st.rerun() 
-                else:
-                    st.sidebar.error("මුරපදය වැරදියි! නැවත උත්සාහ කරන්න.")
-                    
-    # පියවර 2: Password එක හරි ගියාට පස්සේ Admin Panel එකට යන බොත්තම
-    else:
-        st.sidebar.success("මුරපදය නිවැරදියි! ✅")
-        st.sidebar.write("පහත බොත්තම ඔබන්න:")
-        # මේ බට්න් එක එබුවම Sidebar එක ඉබේම වැහෙනවා
-        if st.sidebar.button("⚙️ ADMIN PANEL එකට යන්න", type="primary"):
-            st.session_state.logged_in = True
-            st.session_state.password_verified = False # ඊළඟ වතාවට ලේසි වෙන්න රීසෙට් කිරීම
-            st.session_state.close_sidebar = True 
-            st.rerun()
 
 # ---------------------------------------------------------
 # 1. පාරිභෝගිකයින්ට පෙනෙන පිටුව
@@ -194,35 +161,23 @@ if choice == "භාණ්ඩ බලන්න (Home)":
 # ---------------------------------------------------------
 elif choice == "කළමනාකරුට පමණයි (Admin)":
     
-    # අමතර ආරක්ෂාවට සහ සහතික වීමට JS Script එකක් (බොත්තම එබූ වහාම ක්‍රියාත්මක වේ)
-    if st.session_state.close_sidebar:
-        components.html(
-            """
-            <script>
-                setTimeout(function() {
-                    var doc = window.parent.document;
-                    var buttons = doc.querySelectorAll('button');
-                    for (var i = 0; i < buttons.length; i++) {
-                        if (buttons[i].getAttribute('aria-label') === 'Close sidebar') {
-                            buttons[i].click();
-                            return;
-                        }
-                    }
-                    var overlay = doc.querySelector('[data-testid="stSidebar"] + div');
-                    if (overlay) {
-                        overlay.click();
-                    }
-                }, 300);
-            </script>
-            """,
-            height=0,
-            width=0,
-        )
-        st.session_state.close_sidebar = False
-    
+    # ලොග් වී නොමැති නම් ප්‍රධාන තිරයේම Password එක ඇසීම
     if not st.session_state.logged_in:
-        st.info("👈 කරුණාකර වම් පසින් ඇති මෙනුවෙන් මුරපදය (Password) ඇතුලත් කර 'Enter' ඔබන්න.")
-                
+        st.header("🔒 Admin Panel (ඇතුලත් වන්න)")
+        st.info("කරුණාකර ඇතුලත් වීමට පහතින් මුරපදය ලබා දෙන්න.")
+        
+        with st.form("main_login_form"):
+            password = st.text_input("මුරපදය (Password)", type="password")
+            submit_login = st.form_submit_button("ඇතුලත් වන්න (Enter)")
+            
+            if submit_login:
+                if password == ADMIN_PASSWORD:
+                    st.session_state.logged_in = True
+                    st.rerun() 
+                else:
+                    st.error("මුරපදය වැරදියි! නැවත උත්සාහ කරන්න.")
+                    
+    # ලොග් වී ඇත්නම් Admin Panel එක පෙන්වීම
     else:
         st.header("Admin Panel (භාණ්ඩ කළමනාකරණය)")
         

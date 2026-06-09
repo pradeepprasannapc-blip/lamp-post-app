@@ -75,16 +75,15 @@ if choice == "භාණ්ඩ බලන්න (Home)":
         
         st.write("") # බට්න් වලට උඩින් පොඩි හිඩසක් තියන්න
         
-        # --- Contact Buttons (පින්තූර මගින්) ---
+        # --- Contact Buttons (පින්තූර මගින් - Screen එකේ දිගටම පේන්න) ---
         col1, col2 = st.columns(2)
         
         with col1:
             wa_b64 = get_image_base64("whatsapp_button.png")
-            # ඔයා ඉල්ලපු විදිහට අලුත් WhatsApp Message එක
             wa_msg = f"මට මේ product එක ගැන දැනගන්න ඕනි: {p['name']}"
             if wa_b64:
-                # පින්තූරය ලොකු කරලා පිළිවෙලකට පෙන්වීම (height එක 65px කළා)
-                wa_html = f'<a href="https://wa.me/{WHATSAPP_NUM}?text={wa_msg}" target="_blank"><img src="data:image/png;base64,{wa_b64}" style="height:65px; object-fit:contain; border-radius:5px;"></a>'
+                # පළල 100% කරලා, බට්න් එක ලොකු කරලා තියෙන්නේ
+                wa_html = f'<a href="https://wa.me/{WHATSAPP_NUM}?text={wa_msg}" target="_blank" style="display:block; width:100%;"><img src="data:image/png;base64,{wa_b64}" style="width:100%; height:60px; object-fit:fill; border-radius:8px;"></a>'
                 st.markdown(wa_html, unsafe_allow_html=True)
             else:
                 st.markdown(f"[💬 WhatsApp මගින් විමසන්න](https://wa.me/{WHATSAPP_NUM}?text={wa_msg})")
@@ -92,8 +91,8 @@ if choice == "භාණ්ඩ බලන්න (Home)":
         with col2:
             call_b64 = get_image_base64("call_now_1.png")
             if call_b64:
-                # පින්තූරය ලොකු කරලා පිළිවෙලකට පෙන්වීම
-                call_html = f'<a href="tel:{CALL_NUM}"><img src="data:image/png;base64,{call_b64}" style="height:65px; object-fit:contain; border-radius:5px;"></a>'
+                # පළල 100% කරලා, බට්න් එක ලොකු කරලා තියෙන්නේ
+                call_html = f'<a href="tel:{CALL_NUM}" style="display:block; width:100%;"><img src="data:image/png;base64,{call_b64}" style="width:100%; height:60px; object-fit:fill; border-radius:8px;"></a>'
                 st.markdown(call_html, unsafe_allow_html=True)
             else:
                 st.markdown(f"[📞 කෝල් එකක් ගන්න](tel:{CALL_NUM})")

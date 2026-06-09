@@ -8,9 +8,9 @@ st.set_page_config(page_title="අපේ පහන් කණු", page_icon="�
 
 # --- Settings (මෙතන ඔයාගේ විස්තර වෙනස් කරන්න) ---
 DATA_FILE = "products.json"
-WHATSAPP_NUM = "94779998189"  # ඔයාගේ WhatsApp නම්බර් එක (94 න් පටන් ගන්න, + එපා)
-CALL_NUM = "94779998189"     # ඔයාගේ සාමාන්‍ය ෆෝන් නම්බර් එක
-ADMIN_PASSWORD = "8189"        # ඇප් එකට විස්තර දාන්න ඔයා පාවිච්චි කරන පාස්වර්ඩ් එක
+WHATSAPP_NUM = "94779998189"  # ඔයාගේ WhatsApp නම්බර් එක
+CALL_NUM = "94779998189"      # ඔයාගේ සාමාන්‍ය ෆෝන් නම්බර් එක
+ADMIN_PASSWORD = "8189"       # ඇප් එකට විස්තර දාන්න ඔයා පාවිච්චි කරන පාස්වර්ඩ් එක
 
 # --- Data Handling Functions ---
 def load_data():
@@ -30,7 +30,14 @@ if 'products' not in st.session_state:
     st.session_state.products = load_data()
 
 # --- App UI and Navigation ---
-st.title("💡 අපේ පහන් කණු ව්‍යාපාරය")
+# මෙන්න මෙතනින් තමයි ඔයාගේ අලුත් Header පින්තූරය පෙන්නන්නේ
+image_path = "header.png" # ඔයා පින්තූරය සේව් කරපු නම මෙතනට ගැලපෙන්න ඕනේ (උදා: header.jpg නම් එහෙම වෙනස් කරන්න)
+if os.path.exists(image_path):
+    st.image(image_path, use_column_width=True)
+elif os.path.exists("header.jpg"):
+    st.image("header.jpg", use_column_width=True)
+
+st.title("💡 අපේ පහන් කණු ව්‍යාපාරය (Chathura Group)")
 
 menu = ["භාණ්ඩ බලන්න (Home)", "කළමනාකරුට පමණයි (Admin)"]
 choice = st.sidebar.selectbox("මෙනුව තෝරන්න", menu)

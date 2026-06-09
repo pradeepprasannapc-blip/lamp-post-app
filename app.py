@@ -8,7 +8,7 @@ st.set_page_config(page_title="අපේ පහන් කණු", page_icon="�
 
 # --- Settings (මෙතන ඔයාගේ විස්තර වෙනස් කරන්න) ---
 DATA_FILE = "products.json"
-WHATSAPP_NUM = "94779998189"  # ඔයාගේ WhatsApp නම්බර් එක
+WHATSAPP_NUM = "94779998189"  # ඔයාගේ WhatsApp නම්බර් එක 
 CALL_NUM = "94779998189"      # ඔයාගේ සාමාන්‍ය ෆෝන් නම්බර් එක
 ADMIN_PASSWORD = "8189"       # ඇප් එකට විස්තර දාන්න ඔයා පාවිච්චි කරන පාස්වර්ඩ් එක
 
@@ -26,12 +26,20 @@ def save_data(data):
     with open(DATA_FILE, "w") as f:
         json.dump(data, f)
 
+# පින්තූර Clickable Buttons විදිහට හදාගන්න අවශ්‍ය Function එක
+def get_image_base64(filepath):
+    if os.path.exists(filepath):
+        with open(filepath, "rb") as img_file:
+            return base64.b64encode(img_file.read()).decode()
+    return None
+
 if 'products' not in st.session_state:
     st.session_state.products = load_data()
 
 # --- App UI and Navigation ---
-# මෙන්න මෙතනින් තමයි ඔයාගේ අලුත් Header පින්තූරය පෙන්නන්නේ
-image_path = "header.png" # ඔයා පින්තූරය සේව් කරපු නම මෙතනට ගැලපෙන්න ඕනේ (උදා: header.jpg නම් එහෙම වෙනස් කරන්න)
+
+# Header පින්තූරය පෙන්වීම
+image_path = "header.png" 
 if os.path.exists(image_path):
     st.image(image_path, use_column_width=True)
 elif os.path.exists("header.jpg"):
@@ -54,7 +62,7 @@ if choice == "භාණ්ඩ බලන්න (Home)":
     for idx, p in enumerate(st.session_state.products):
         st.subheader(p['name'])
         
-        # පින්තූරය පෙන්වීම
+        # භාණ්ඩයේ පින්තූරය පෙන්වීම
         if p.get('image'):
             try:
                 img_bytes = base64.b64decode(p['image'])
@@ -65,12 +73,28 @@ if choice == "භාණ්ඩ බලන්න (Home)":
         st.write(f"**විස්තරය:** {p['desc']}")
         st.write(f"**මිල:** රු. {p['price']}")
         
-        # Contact Buttons
+        # --- Contact Buttons (පින්තූර මගින්) ---
         col1, col2 = st.columns(2)
+        
         with col1:
-            st.markdown(f"[💬 WhatsApp මගින් විමසන්න](https://wa.me/{WHATSAPP_NUM}?text=මට මේ පහන් කණුව ගැන දැනගන්න ඕනේ: {p['name']})")
+            wa_b64 = get_image_base64("whatsapp_button.png")
+            wa_msg = f"මට මේ පහන් කණුව ගැන දැනගන්න ඕනේ: {p['name']}"
+            if wa_b64:
+                # පින්තූරය තියෙනවා නම් ඒක Click කරන්න පුළුවන් විදිහට පෙන්වීම
+                wa_html = f'<a href="https://wa.me/{WHATSAPP_NUM}?text={wa_msg}" target="_blank"><img src="data:image/png;base64,{wa_b64}" style="height:45px; border-radius:5px;"></a>'
+                st.markdown(wa_html, unsafe_allow_html=True)
+            else:
+                # පින්තූරය නැත්නම් සාමාන්‍ය ලින්ක් එක පෙන්වීම
+                st.markdown(f"[💬 WhatsApp මගින් විමසන්න](https://wa.me/{WHATSAPP_NUM}?text={wa_msg})")
+                
         with col2:
-            st.markdown(f"[📞 කෝල් එකක් ගන්න](tel:{CALL_NUM})")
+            call_b64 = get_image_base64("call_now_1.png")
+            if call_b64:
+                call_html = f'<a href="tel:{CALL_NUM}"><img src="data:image/png;base64,{call_b64}" style="height:45px; border-radius:5px;"></a>'
+                st.markdown(call_html, unsafe_allow_html=True)
+            else:
+                st.markdown(f"[📞 කෝල් එකක් ගන්න](tel:{CALL_NUM})")
+                
         st.markdown("---")
 
 # ---------------------------------------------------------

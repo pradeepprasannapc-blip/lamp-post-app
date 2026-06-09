@@ -6,6 +6,18 @@ import base64
 # --- App Configuration ---
 st.set_page_config(page_title="Chathura Group", page_icon="✨", layout="centered")
 
+# --- Custom CSS for Premium Borders ---
+st.markdown("""
+<style>
+    /* ලස්සන 3D පෙනුමක් සහ වක්‍ර හැඩයක් බෝඩර් වලට ලබා දීම */
+    div[data-testid="stVerticalBlockBorderWrapper"] {
+        border-radius: 20px !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+        padding: 15px !important;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 # --- Settings (මෙතන ඔයාගේ විස්තර වෙනස් කරන්න) ---
 DATA_FILE = "products.json"
 WHATSAPP_NUM = "94779998189"  # ඔයාගේ WhatsApp නම්බර් එක 
@@ -38,16 +50,15 @@ if 'products' not in st.session_state:
 
 # --- App UI and Navigation ---
 
-# Header පින්තූරය පෙන්වීම
-image_path = "header.png" 
-if os.path.exists(image_path):
-    st.image(image_path, use_column_width=True)
-elif os.path.exists("header.jpg"):
-    st.image("header.jpg", use_column_width=True)
+# 1. Header පින්තූරය සහ නම එකම බෝඩර් එකක් ඇතුළට දැමීම
+with st.container(border=True):
+    image_path = "header.png" 
+    if os.path.exists(image_path):
+        st.image(image_path, use_column_width=True)
+    elif os.path.exists("header.jpg"):
+        st.image("header.jpg", use_column_width=True)
 
-# අලුත් ප්‍රධාන නාමය
-st.markdown("<h1 style='text-align: center; font-family: serif;'>✨ CHATHURA GROUP 🏛️</h1>", unsafe_allow_html=True)
-st.markdown("<hr style='margin-top: -10px; margin-bottom: 20px;'>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center; font-family: serif; margin-top: 5px; margin-bottom: 5px;'>✨ CHATHURA GROUP 🏛️</h1>", unsafe_allow_html=True)
 
 menu = ["භාණ්ඩ බලන්න (Home)", "කළමනාකරුට පමණයි (Admin)"]
 choice = st.sidebar.selectbox("මෙනුව තෝරන්න", menu)
@@ -64,44 +75,43 @@ if choice == "භාණ්ඩ බලන්න (Home)":
         st.info("දැනට භාණ්ඩ කිසිවක් ඇතුලත් කර නොමැත. කරුණාකර පසුව පැමිණෙන්න.")
         
     for idx, p in enumerate(st.session_state.products):
-        st.subheader(p['name'])
         
-        # භාණ්ඩයේ පින්තූරය පෙන්වීම
-        if p.get('image'):
-            try:
-                img_bytes = base64.b64decode(p['image'])
-                st.image(img_bytes, use_column_width=True)
-            except Exception as e:
-                st.error("පින්තූරය පෙන්වීමේ දෝෂයකි.")
-                
-        st.write(f"**විස්තරය:** {p['desc']}")
-        st.write(f"**මිල:** රු. {p['price']}")
-        
-        st.write("") 
-        
-        # --- Contact Buttons (බෝඩර් එක ඇතුලේ ලොකුවට පෙන්වීමට සකසා ඇත) ---
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            wa_b64 = get_image_base64("whatsapp_button.png")
-            wa_msg = f"මට මේ product එක ගැන දැනගන්න ඕනි: {p['name']}"
-            if wa_b64:
-                # බොඩර් එක parent tag එකට දාලා පින්තූරය 85% ක් විශාල කර ඇත
-                wa_html = f'<a href="https://wa.me/{WHATSAPP_NUM}?text={wa_msg}" target="_blank" style="display:flex; justify-content:center; align-items:center; width:100%; height:110px; border: 3px solid #25D366; border-radius: 20px; text-decoration:none; box-sizing:border-box;"><img src="data:image/png;base64,{wa_b64}" style="width:85%; height:85%; object-fit:contain;"></a>'
-                st.markdown(wa_html, unsafe_allow_html=True)
-            else:
-                st.markdown(f"[💬 WhatsApp මගින් විමසන්න](https://wa.me/{WHATSAPP_NUM}?text={wa_msg})")
-                
-        with col2:
-            call_b64 = get_image_base64("call_now_1.png")
-            if call_b64:
-                # බොඩර් එක parent tag එකට දාලා පින්තූරය 85% ක් විශාල කර ඇත
-                call_html = f'<a href="tel:{CALL_NUM}" style="display:flex; justify-content:center; align-items:center; width:100%; height:110px; border: 3px solid #FF8C00; border-radius: 20px; text-decoration:none; box-sizing:border-box;"><img src="data:image/png;base64,{call_b64}" style="width:85%; height:85%; object-fit:contain;"></a>'
-                st.markdown(call_html, unsafe_allow_html=True)
-            else:
-                st.markdown(f"[📞 කෝල් එකක් ගන්න](tel:{CALL_NUM})")
-                
-        st.markdown("---")
+        # 2. සෑම භාණ්ඩයක්ම වෙනම බෝඩර් එකක් (Card එකක්) ඇතුළට දැමීම
+        with st.container(border=True):
+            st.subheader(p['name'])
+            
+            # භාණ්ඩයේ පින්තූරය පෙන්වීම
+            if p.get('image'):
+                try:
+                    img_bytes = base64.b64decode(p['image'])
+                    st.image(img_bytes, use_column_width=True)
+                except Exception as e:
+                    st.error("පින්තූරය පෙන්වීමේ දෝෂයකි.")
+                    
+            st.write(f"**විස්තරය:** {p['desc']}")
+            st.write(f"**මිල:** රු. {p['price']}")
+            
+            st.write("") 
+            
+            # --- Contact Buttons ---
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                wa_b64 = get_image_base64("whatsapp_button.png")
+                wa_msg = f"මට මේ product එක ගැන දැනගන්න ඕනි: {p['name']}"
+                if wa_b64:
+                    wa_html = f'<a href="https://wa.me/{WHATSAPP_NUM}?text={wa_msg}" target="_blank" style="display:flex; justify-content:center; align-items:center; width:100%; height:110px; border: 3px solid #25D366; border-radius: 20px; text-decoration:none; box-sizing:border-box;"><img src="data:image/png;base64,{wa_b64}" style="width:85%; height:85%; object-fit:contain;"></a>'
+                    st.markdown(wa_html, unsafe_allow_html=True)
+                else:
+                    st.markdown(f"[💬 WhatsApp මගින් විමසන්න](https://wa.me/{WHATSAPP_NUM}?text={wa_msg})")
+                    
+            with col2:
+                call_b64 = get_image_base64("call_now_1.png")
+                if call_b64:
+                    call_html = f'<a href="tel:{CALL_NUM}" style="display:flex; justify-content:center; align-items:center; width:100%; height:110px; border: 3px solid #FF8C00; border-radius: 20px; text-decoration:none; box-sizing:border-box;"><img src="data:image/png;base64,{call_b64}" style="width:85%; height:85%; object-fit:contain;"></a>'
+                    st.markdown(call_html, unsafe_allow_html=True)
+                else:
+                    st.markdown(f"[📞 කෝල් එකක් ගන්න](tel:{CALL_NUM})")
 
 # ---------------------------------------------------------
 # 2. ඔයාට පමණක් පෙනෙන පිටුව (Admin Panel)
@@ -146,12 +156,13 @@ elif choice == "කළමනාකරුට පමණයි (Admin)":
         st.write("---")
         st.subheader("දැනට ඇති භාණ්ඩ ඉවත් කරන්න")
         for i, p in enumerate(st.session_state.products):
-            col1, col2 = st.columns([3, 1])
-            col1.write(p['name'])
-            if col2.button("මකන්න", key=f"del_{i}"):
-                st.session_state.products.pop(i)
-                save_data(st.session_state.products)
-                st.rerun()
+            with st.container(border=True): # Admin පැත්තේ මකන ඒවාටත් බෝඩර් එකක් දැම්මා
+                col1, col2 = st.columns([3, 1])
+                col1.write(p['name'])
+                if col2.button("මකන්න", key=f"del_{i}"):
+                    st.session_state.products.pop(i)
+                    save_data(st.session_state.products)
+                    st.rerun()
 
     elif password != "":
         st.error("මුරපදය වැරදියි!")

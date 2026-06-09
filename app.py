@@ -70,6 +70,8 @@ if 'products' not in st.session_state:
     st.session_state.products = load_data()
 if 'logged_in' not in st.session_state:
     st.session_state.logged_in = False
+if 'password_verified' not in st.session_state:
+    st.session_state.password_verified = False # අලුතින් දැමූ එක
 if 'menu_selection' not in st.session_state:
     st.session_state.menu_selection = "භාණ්ඩ බලන්න (Home)"
 if 'editing_index' not in st.session_state:
@@ -80,6 +82,7 @@ if 'close_sidebar' not in st.session_state:
 # Logout Function
 def logout_user():
     st.session_state.logged_in = False
+    st.session_state.password_verified = False
     st.session_state.menu_selection = "භාණ්ඩ බලන්න (Home)"
     st.session_state.editing_index = None
 
@@ -107,22 +110,34 @@ st.markdown(header_html, unsafe_allow_html=True)
 menu = ["භාණ්ඩ බලන්න (Home)", "කළමනාකරුට පමණයි (Admin)"]
 choice = st.sidebar.selectbox("මෙනුව තෝරන්න", menu, key="menu_selection")
 
-# --- Sidebar Login (පැත්තෙන් Password ගැසීමට) ---
+# --- Sidebar Login (පියවර 2කින් සමන්විත අලුත් ක්‍රමය) ---
 if choice == "කළමනාකරුට පමණයි (Admin)" and not st.session_state.logged_in:
     st.sidebar.markdown("---")
-    st.sidebar.info("කරුණාකර ඇතුලත් වීමට මුරපදය ලබා දෙන්න.")
     
-    with st.sidebar.form("login_form"):
-        password = st.text_input("මුරපදය (Password)", type="password")
-        submit_login = st.form_submit_button("ඇතුලත් වන්න (Enter)")
-        
-        if submit_login:
-            if password == ADMIN_PASSWORD:
-                st.session_state.logged_in = True
-                st.session_state.close_sidebar = True # ලොග් වූ වහාම Sidebar එක වැසීමට
-                st.rerun() 
-            else:
-                st.sidebar.error("මුරපදය වැරදියි! නැවත උත්සාහ කරන්න.")
+    # පියවර 1: Password එක ඇතුලත් කිරීම
+    if not st.session_state.password_verified:
+        st.sidebar.info("කරුණාකර ඇතුලත් වීමට මුරපදය ලබා දෙන්න.")
+        with st.sidebar.form("login_form"):
+            password = st.text_input("මුරපදය (Password)", type="password")
+            submit_login = st.form_submit_button("Enter")
+            
+            if submit_login:
+                if password == ADMIN_PASSWORD:
+                    st.session_state.password_verified = True
+                    st.rerun() 
+                else:
+                    st.sidebar.error("මුරපදය වැරදියි! නැවත උත්සාහ කරන්න.")
+                    
+    # පියවර 2: Password එක හරි ගියාට පස්සේ Admin Panel එකට යන බොත්තම
+    else:
+        st.sidebar.success("මුරපදය නිවැරදියි! ✅")
+        st.sidebar.write("පහත බොත්තම ඔබන්න:")
+        # මේ බට්න් එක එබුවම Sidebar එක ඉබේම වැහෙනවා
+        if st.sidebar.button("⚙️ ADMIN PANEL එකට යන්න", type="primary"):
+            st.session_state.logged_in = True
+            st.session_state.password_verified = False # ඊළඟ වතාවට ලේසි වෙන්න රීසෙට් කිරීම
+            st.session_state.close_sidebar = True 
+            st.rerun()
 
 # ---------------------------------------------------------
 # 1. පාරිභෝගිකයින්ට පෙනෙන පිටුව
@@ -179,16 +194,13 @@ if choice == "භාණ්ඩ බලන්න (Home)":
 # ---------------------------------------------------------
 elif choice == "කළමනාකරුට පමණයි (Admin)":
     
-    # නව සහ වඩාත් සාර්ථක Auto Close Sidebar JS Script එක (Time delay එකක් සහිතව)
+    # අමතර ආරක්ෂාවට සහ සහතික වීමට JS Script එකක් (බොත්තම එබූ වහාම ක්‍රියාත්මක වේ)
     if st.session_state.close_sidebar:
         components.html(
             """
             <script>
-                // තත්පර බාගයක් (500ms) පරක්කු කරලා තමයි Sidebar එක වහන්නේ
                 setTimeout(function() {
                     var doc = window.parent.document;
-                    
-                    // ක්‍රමය 1: Close sidebar බොත්තම හොයාගෙන click කිරීම
                     var buttons = doc.querySelectorAll('button');
                     for (var i = 0; i < buttons.length; i++) {
                         if (buttons[i].getAttribute('aria-label') === 'Close sidebar') {
@@ -196,13 +208,11 @@ elif choice == "කළමනාකරුට පමණයි (Admin)":
                             return;
                         }
                     }
-                    
-                    // ක්‍රමය 2: ෆෝන් වලදී Sidebar එකට පිටින් තියෙන අඳුරු පසුබිම Click කිරීම
                     var overlay = doc.querySelector('[data-testid="stSidebar"] + div');
                     if (overlay) {
                         overlay.click();
                     }
-                }, 500);
+                }, 300);
             </script>
             """,
             height=0,

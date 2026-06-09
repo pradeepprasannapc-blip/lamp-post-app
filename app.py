@@ -4,8 +4,13 @@ import json
 import os
 import base64
 
-# --- App Configuration ---
-st.set_page_config(page_title="Chathura Group", page_icon="✨", layout="centered")
+# --- App Configuration (sidebar වැහිලා තියෙන්න මෙතන වෙනස් කළා) ---
+st.set_page_config(
+    page_title="Chathura Group", 
+    page_icon="✨", 
+    layout="centered", 
+    initial_sidebar_state="collapsed" 
+)
 
 # --- Custom CSS for Premium Borders with Colors ---
 st.markdown("""
@@ -74,8 +79,6 @@ if 'menu_selection' not in st.session_state:
     st.session_state.menu_selection = "භාණ්ඩ බලන්න (Home)"
 if 'editing_index' not in st.session_state:
     st.session_state.editing_index = None
-if 'close_sidebar' not in st.session_state:
-    st.session_state.close_sidebar = False
 
 # Logout Function
 def logout_user():
@@ -104,7 +107,7 @@ else:
     """
 st.markdown(header_html, unsafe_allow_html=True)
 
-# මෙනුව
+# මෙනුව (මෙතනින් එහාට sidebar එක පාවිච්චි කරන්න)
 menu = ["භාණ්ඩ බලන්න (Home)", "කළමනාකරුට පමණයි (Admin)"]
 choice = st.sidebar.selectbox("මෙනුව තෝරන්න", menu, key="menu_selection")
 
@@ -120,7 +123,6 @@ if choice == "කළමනාකරුට පමණයි (Admin)" and not st.se
         if submit_login:
             if password == ADMIN_PASSWORD:
                 st.session_state.logged_in = True
-                st.session_state.close_sidebar = True # ලොග් වූ වහාම Sidebar එක වැසීමට සංඥාව
                 st.rerun() 
             else:
                 st.sidebar.error("මුරපදය වැරදියි! නැවත උත්සාහ කරන්න.")
@@ -180,34 +182,9 @@ if choice == "භාණ්ඩ බලන්න (Home)":
 # ---------------------------------------------------------
 elif choice == "කළමනාකරුට පමණයි (Admin)":
     
-    # Auto Close Sidebar JS Script (සමහර උපාංග වල ඉබේම ක්‍රියාත්මක වේ)
-    if st.session_state.close_sidebar:
-        components.html(
-            """
-            <script>
-                setTimeout(function() {
-                    var doc = window.parent.document;
-                    var buttons = doc.querySelectorAll('button');
-                    for (var i = 0; i < buttons.length; i++) {
-                        if (buttons[i].getAttribute('aria-label') === 'Close sidebar') {
-                            buttons[i].click();
-                            return;
-                        }
-                    }
-                    var overlay = doc.querySelector('[data-testid="stSidebar"] + div');
-                    if (overlay) {
-                        overlay.click();
-                    }
-                }, 500);
-            </script>
-            """,
-            height=0,
-            width=0,
-        )
-        st.session_state.close_sidebar = False
-    
     if not st.session_state.logged_in:
-        st.info("👈 කරුණාකර වම් පසින් ඇති මෙනුවෙන් මුරපදය (Password) ඇතුලත් කර 'Enter' ඔබන්න.")
+        st.header("🔒 Admin Panel (ඇතුලත් වන්න)")
+        st.info("කරුණාකර වම් පස මෙනුවෙන් (Sidebar) මුරපදය ලබා දෙන්න.")
                 
     else:
         st.header("Admin Panel (භාණ්ඩ කළමනාකරණය)")

@@ -8,9 +8,9 @@ st.set_page_config(page_title="අපේ පහන් කණු", page_icon="�
 
 # --- Settings (මෙතන ඔයාගේ විස්තර වෙනස් කරන්න) ---
 DATA_FILE = "products.json"
-WHATSAPP_NUM = "94770000000"  # ඔයාගේ WhatsApp නම්බර් එක (94 න් පටන් ගන්න, + එපා)
-CALL_NUM = "+94770000000"     # ඔයාගේ සාමාන්‍ය ෆෝන් නම්බර් එක
-ADMIN_PASSWORD = "123"        # ඇප් එකට විස්තර දාන්න ඔයා පාවිච්චි කරන පාස්වර්ඩ් එක
+WHATSAPP_NUM = "94779998189"  # ඔයාගේ WhatsApp නම්බර් එක (94 න් පටන් ගන්න, + එපා)
+CALL_NUM = "94779998189"     # ඔයාගේ සාමාන්‍ය ෆෝන් නම්බර් එක
+ADMIN_PASSWORD = "8189"        # ඇප් එකට විස්තර දාන්න ඔයා පාවිච්චි කරන පාස්වර්ඩ් එක
 
 # --- Data Handling Functions ---
 def load_data():

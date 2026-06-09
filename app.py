@@ -108,39 +108,22 @@ st.markdown(header_html, unsafe_allow_html=True)
 menu = ["භාණ්ඩ බලන්න (Home)", "කළමනාකරුට පමණයි (Admin)"]
 choice = st.sidebar.selectbox("මෙනුව තෝරන්න", menu, key="menu_selection")
 
-# --- අලුතින් දැමූ මෙනුව වසන බොත්තම ---
-st.sidebar.markdown("<br>", unsafe_allow_html=True)
-if st.sidebar.button("⬅️ මෙනුව වසන්න (Close Sidebar)", use_container_width=True):
-    st.session_state.close_sidebar = True
-    st.rerun()
-
-# --- JS Script (Sidebar එක වසන ක්‍රියාවලිය) ---
-if st.session_state.get('close_sidebar', False):
-    components.html(
-        """
-        <script>
-            var doc = window.parent.document;
-            // ෆෝන් වලදී Sidebar එකට පිටින් තියෙන අඳුරු පසුබිම Click කිරීම (වඩාත් සාර්ථකම ක්‍රමය)
-            var overlay = doc.querySelector('[data-testid="stSidebar"] + div');
-            if (overlay) {
-                overlay.click();
-            } else {
-                // එහෙම නැත්නම් Close බොත්තම හොයාගෙන Click කිරීම
-                var buttons = doc.querySelectorAll('button');
-                for (var i = 0; i < buttons.length; i++) {
-                    if (buttons[i].getAttribute('aria-label') === 'Close sidebar') {
-                        buttons[i].click();
-                        break;
-                    }
-                }
-            }
-        </script>
-        """,
-        height=0,
-        width=0,
-    )
-    st.session_state.close_sidebar = False
-
+# --- Sidebar Login (Side bar එක ඇතුළෙම Password ගැසීමට) ---
+if choice == "කළමනාකරුට පමණයි (Admin)" and not st.session_state.logged_in:
+    st.sidebar.markdown("---")
+    st.sidebar.info("කරුණාකර ඇතුලත් වීමට මුරපදය ලබා දෙන්න.")
+    
+    with st.sidebar.form("login_form"):
+        password = st.text_input("මුරපදය (Password)", type="password")
+        submit_login = st.form_submit_button("ඇතුලත් වන්න (Enter)")
+        
+        if submit_login:
+            if password == ADMIN_PASSWORD:
+                st.session_state.logged_in = True
+                st.session_state.close_sidebar = True # ලොග් වූ වහාම Sidebar එක වැසීමට සංඥාව
+                st.rerun() 
+            else:
+                st.sidebar.error("මුරපදය වැරදියි! නැවත උත්සාහ කරන්න.")
 
 # ---------------------------------------------------------
 # 1. පාරිභෝගිකයින්ට පෙනෙන පිටුව
@@ -197,23 +180,35 @@ if choice == "භාණ්ඩ බලන්න (Home)":
 # ---------------------------------------------------------
 elif choice == "කළමනාකරුට පමණයි (Admin)":
     
-    # ලොග් වී නොමැති නම් ප්‍රධාන තිරයේම Password එක ඇසීම
+    # Auto Close Sidebar JS Script (සමහර උපාංග වල ඉබේම ක්‍රියාත්මක වේ)
+    if st.session_state.close_sidebar:
+        components.html(
+            """
+            <script>
+                setTimeout(function() {
+                    var doc = window.parent.document;
+                    var buttons = doc.querySelectorAll('button');
+                    for (var i = 0; i < buttons.length; i++) {
+                        if (buttons[i].getAttribute('aria-label') === 'Close sidebar') {
+                            buttons[i].click();
+                            return;
+                        }
+                    }
+                    var overlay = doc.querySelector('[data-testid="stSidebar"] + div');
+                    if (overlay) {
+                        overlay.click();
+                    }
+                }, 500);
+            </script>
+            """,
+            height=0,
+            width=0,
+        )
+        st.session_state.close_sidebar = False
+    
     if not st.session_state.logged_in:
-        st.header("🔒 Admin Panel (ඇතුලත් වන්න)")
-        st.info("කරුණාකර ඇතුලත් වීමට පහතින් මුරපදය ලබා දෙන්න.")
-        
-        with st.form("main_login_form"):
-            password = st.text_input("මුරපදය (Password)", type="password")
-            submit_login = st.form_submit_button("ඇතුලත් වන්න (Enter)")
-            
-            if submit_login:
-                if password == ADMIN_PASSWORD:
-                    st.session_state.logged_in = True
-                    st.rerun() 
-                else:
-                    st.error("මුරපදය වැරදියි! නැවත උත්සාහ කරන්න.")
-                    
-    # ලොග් වී ඇත්නම් Admin Panel එක පෙන්වීම
+        st.info("👈 කරුණාකර වම් පසින් ඇති මෙනුවෙන් මුරපදය (Password) ඇතුලත් කර 'Enter' ඔබන්න.")
+                
     else:
         st.header("Admin Panel (භාණ්ඩ කළමනාකරණය)")
         

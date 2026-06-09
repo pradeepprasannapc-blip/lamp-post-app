@@ -14,10 +14,10 @@ st.markdown("""
         border-radius: 15px !important;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2) !important;
         padding: 15px !important;
-        border: 2px solid #5D6D7E !important; /* අළු පාට බෝඩර් එක */
+        border: 2px solid #5D6D7E !important; 
     }
     
-    /* Header එක සඳහා වෙනම පෙනුමක් (ලා නිල්/අළු) */
+    /* Header එක සඳහා වෙනම පෙනුමක් (පින්තූරය සහ නම එකම කොටුවක) */
     .header-card {
         border: 3px solid #5DADE2; 
         border-radius: 20px;
@@ -25,6 +25,7 @@ st.markdown("""
         box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         margin-bottom: 20px;
         text-align: center;
+        background-color: rgba(93, 173, 226, 0.05);
     }
     
     /* Sub-header (නවතම products) සඳහා වෙනම පෙනුමක් (රන්වන් පැහැති) */
@@ -35,7 +36,7 @@ st.markdown("""
         box-shadow: 0 3px 10px rgba(244, 208, 63, 0.3);
         margin-bottom: 25px;
         text-align: center;
-        background-color: rgba(244, 208, 63, 0.05); /* ඉතාමත් ලා රන්වන් පසුබිමක් */
+        background-color: rgba(244, 208, 63, 0.05); 
     }
 </style>
 """, unsafe_allow_html=True)
@@ -66,27 +67,32 @@ def get_image_base64(filepath):
             return base64.b64encode(img_file.read()).decode()
     return None
 
+# Session States (Login එක මතක තියාගන්න)
 if 'products' not in st.session_state:
     st.session_state.products = load_data()
+if 'logged_in' not in st.session_state:
+    st.session_state.logged_in = False
 
 # --- App UI and Navigation ---
 
-# 1. Header පින්තූරය සහ නම අලුත් වර්ණ ගැන්වූ බෝඩර් එකක් ඇතුළත (HTML මගින්)
-header_html = """
-<div class="header-card">
-"""
+# 1. Header පින්තූරය සහ නම එකම HTML බෝඩර් එකක් (header-card) ඇතුළත
+header_file = "header.png" if os.path.exists("header.png") else "header.jpg"
+header_b64 = get_image_base64(header_file)
+
+if header_b64:
+    header_html = f"""
+    <div class="header-card">
+        <img src="data:image/png;base64,{header_b64}" style="width:100%; border-radius:10px; margin-bottom: 15px; object-fit: cover;">
+        <h2 style='text-align: center; font-family: serif; margin-top: 0px; margin-bottom: 5px; font-weight: bold;'>✨ CHATHURA GROUP 👥</h2>
+    </div>
+    """
+else:
+    header_html = """
+    <div class="header-card">
+        <h2 style='text-align: center; font-family: serif; margin-top: 5px; margin-bottom: 5px; font-weight: bold;'>✨ CHATHURA GROUP 👥</h2>
+    </div>
+    """
 st.markdown(header_html, unsafe_allow_html=True)
-
-image_path = "header.png" 
-if os.path.exists(image_path):
-    st.image(image_path, use_column_width=True)
-elif os.path.exists("header.jpg"):
-    st.image("header.jpg", use_column_width=True)
-
-# නම එකම පේළියක පෙන්වීමට h2 පාවිච්චි කර ඇත (h1 වලට වඩා ටිකක් කුඩායි)
-st.markdown("<h2 style='text-align: center; font-family: serif; margin-top: 10px; margin-bottom: 5px; font-weight: bold;'>✨ CHATHURA GROUP 🏛️</h2>", unsafe_allow_html=True)
-
-st.markdown("</div>", unsafe_allow_html=True) # Header බෝඩර් එක අවසන් කිරීම
 
 
 menu = ["භාණ්ඩ බලන්න (Home)", "කළමනාකරුට පමණයි (Admin)"]
@@ -97,7 +103,6 @@ choice = st.sidebar.selectbox("මෙනුව තෝරන්න", menu)
 # ---------------------------------------------------------
 if choice == "භාණ්ඩ බලන්න (Home)":
     
-    # "අපගේ නවතම PRODUCTS" සඳහා රන්වන් පැහැති බෝඩර් එක
     st.markdown("""
     <div class="subheader-card">
         <h3 style='margin: 0; color: #3498DB;'>💎 අපගේ නවතම PRODUCTS 🛍️</h3>
@@ -109,7 +114,6 @@ if choice == "භාණ්ඩ බලන්න (Home)":
         
     for idx, p in enumerate(st.session_state.products):
         
-        # සෑම භාණ්ඩයක්ම Streamlit container (අළු පාට බෝඩර්) එකක් ඇතුළත
         with st.container(border=True):
             st.subheader(p['name'])
             
@@ -145,14 +149,33 @@ if choice == "භාණ්ඩ බලන්න (Home)":
                     st.markdown(f"[📞 කෝල් එකක් ගන්න](tel:{CALL_NUM})")
 
 # ---------------------------------------------------------
-# 2. Admin Panel
+# 2. Admin Panel (නව Login/Logout පද්ධතිය සහිතව)
 # ---------------------------------------------------------
 elif choice == "කළමනාකරුට පමණයි (Admin)":
-    st.header("Admin Panel (භාණ්ඩ ඇතුලත් කිරීම)")
+    st.header("Admin Panel (භාණ්ඩ කළමනාකරණය)")
     
-    password = st.text_input("මුරපදය (Password) ඇතුලත් කරන්න", type="password")
-    
-    if password == ADMIN_PASSWORD:
+    # ලොග් වී නොමැති නම් Password ඇසීම
+    if not st.session_state.logged_in:
+        st.info("කරුණාකර ඇතුලත් වීමට මුරපදය ලබා දෙන්න.")
+        password = st.text_input("මුරපදය (Password)", type="password")
+        
+        # Enter බට්න් එක
+        if st.button("ඇතුලත් වන්න (Enter)"):
+            if password == ADMIN_PASSWORD:
+                st.session_state.logged_in = True
+                st.rerun() # පිටුව Refresh කර Admin Panel එක පෙන්වයි
+            else:
+                st.error("මුරපදය වැරදියි! නැවත උත්සාහ කරන්න.")
+                
+    # ලොග් වී ඇත්නම් Admin Panel එක පෙන්වීම
+    else:
+        # Logout බට්න් එක
+        col1, col2 = st.columns([3, 1])
+        with col2:
+            if st.button("ඉවත් වන්න (Logout)"):
+                st.session_state.logged_in = False
+                st.rerun()
+                
         st.success("සාර්ථකයි! ඔබට දැන් භාණ්ඩ ඇතුලත් කළ හැක.")
         
         with st.form("add_product_form", clear_on_submit=True):
@@ -192,6 +215,3 @@ elif choice == "කළමනාකරුට පමණයි (Admin)":
                     st.session_state.products.pop(i)
                     save_data(st.session_state.products)
                     st.rerun()
-
-    elif password != "":
-        st.error("මුරපදය වැරදියි!")

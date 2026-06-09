@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import json
 import os
 import base64
@@ -73,6 +74,8 @@ if 'menu_selection' not in st.session_state:
     st.session_state.menu_selection = "භාණ්ඩ බලන්න (Home)"
 if 'editing_index' not in st.session_state:
     st.session_state.editing_index = None
+if 'close_sidebar' not in st.session_state:
+    st.session_state.close_sidebar = False
 
 # Logout Function
 def logout_user():
@@ -104,6 +107,39 @@ st.markdown(header_html, unsafe_allow_html=True)
 # මෙනුව
 menu = ["භාණ්ඩ බලන්න (Home)", "කළමනාකරුට පමණයි (Admin)"]
 choice = st.sidebar.selectbox("මෙනුව තෝරන්න", menu, key="menu_selection")
+
+# --- අලුතින් දැමූ මෙනුව වසන බොත්තම ---
+st.sidebar.markdown("<br>", unsafe_allow_html=True)
+if st.sidebar.button("⬅️ මෙනුව වසන්න (Close Sidebar)", use_container_width=True):
+    st.session_state.close_sidebar = True
+    st.rerun()
+
+# --- JS Script (Sidebar එක වසන ක්‍රියාවලිය) ---
+if st.session_state.get('close_sidebar', False):
+    components.html(
+        """
+        <script>
+            var doc = window.parent.document;
+            // ෆෝන් වලදී Sidebar එකට පිටින් තියෙන අඳුරු පසුබිම Click කිරීම (වඩාත් සාර්ථකම ක්‍රමය)
+            var overlay = doc.querySelector('[data-testid="stSidebar"] + div');
+            if (overlay) {
+                overlay.click();
+            } else {
+                // එහෙම නැත්නම් Close බොත්තම හොයාගෙන Click කිරීම
+                var buttons = doc.querySelectorAll('button');
+                for (var i = 0; i < buttons.length; i++) {
+                    if (buttons[i].getAttribute('aria-label') === 'Close sidebar') {
+                        buttons[i].click();
+                        break;
+                    }
+                }
+            }
+        </script>
+        """,
+        height=0,
+        width=0,
+    )
+    st.session_state.close_sidebar = False
 
 
 # ---------------------------------------------------------

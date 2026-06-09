@@ -73,24 +73,27 @@ if choice == "භාණ්ඩ බලන්න (Home)":
         st.write(f"**විස්තරය:** {p['desc']}")
         st.write(f"**මිල:** රු. {p['price']}")
         
+        st.write("") # බට්න් වලට උඩින් පොඩි හිඩසක් තියන්න
+        
         # --- Contact Buttons (පින්තූර මගින්) ---
         col1, col2 = st.columns(2)
         
         with col1:
             wa_b64 = get_image_base64("whatsapp_button.png")
-            wa_msg = f"මට මේ පහන් කණුව ගැන දැනගන්න ඕනේ: {p['name']}"
+            # ඔයා ඉල්ලපු විදිහට අලුත් WhatsApp Message එක
+            wa_msg = f"මට මේ product එක ගැන දැනගන්න ඕනි: {p['name']}"
             if wa_b64:
-                # පින්තූරය තියෙනවා නම් ඒක Click කරන්න පුළුවන් විදිහට පෙන්වීම
-                wa_html = f'<a href="https://wa.me/{WHATSAPP_NUM}?text={wa_msg}" target="_blank"><img src="data:image/png;base64,{wa_b64}" style="height:45px; border-radius:5px;"></a>'
+                # පින්තූරය ලොකු කරලා පිළිවෙලකට පෙන්වීම (height එක 65px කළා)
+                wa_html = f'<a href="https://wa.me/{WHATSAPP_NUM}?text={wa_msg}" target="_blank"><img src="data:image/png;base64,{wa_b64}" style="height:65px; object-fit:contain; border-radius:5px;"></a>'
                 st.markdown(wa_html, unsafe_allow_html=True)
             else:
-                # පින්තූරය නැත්නම් සාමාන්‍ය ලින්ක් එක පෙන්වීම
                 st.markdown(f"[💬 WhatsApp මගින් විමසන්න](https://wa.me/{WHATSAPP_NUM}?text={wa_msg})")
                 
         with col2:
             call_b64 = get_image_base64("call_now_1.png")
             if call_b64:
-                call_html = f'<a href="tel:{CALL_NUM}"><img src="data:image/png;base64,{call_b64}" style="height:45px; border-radius:5px;"></a>'
+                # පින්තූරය ලොකු කරලා පිළිවෙලකට පෙන්වීම
+                call_html = f'<a href="tel:{CALL_NUM}"><img src="data:image/png;base64,{call_b64}" style="height:65px; object-fit:contain; border-radius:5px;"></a>'
                 st.markdown(call_html, unsafe_allow_html=True)
             else:
                 st.markdown(f"[📞 කෝල් එකක් ගන්න](tel:{CALL_NUM})")

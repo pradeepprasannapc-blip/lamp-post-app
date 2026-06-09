@@ -179,15 +179,26 @@ if choice == "භාණ්ඩ බලන්න (Home)":
 # ---------------------------------------------------------
 elif choice == "කළමනාකරුට පමණයි (Admin)":
     
-    # Auto Close Sidebar JS Script (ලොග් වූ වහාම ක්‍රියාත්මක වේ)
+    # නව සහ වඩාත් සාර්ථක Auto Close Sidebar JS Script එක
     if st.session_state.close_sidebar:
         components.html(
             """
             <script>
-                var isMobile = window.innerWidth < 768;
-                if(isMobile) {
-                    var closeBtn = window.parent.document.querySelector('[data-testid="baseButton-headerNoPadding"]');
-                    if(closeBtn) { closeBtn.click(); }
+                var doc = window.parent.document;
+                
+                // ක්‍රමය 1: Escape බොත්තම එබීම අනුකරණය කිරීම
+                var escEvent = new KeyboardEvent('keydown', {
+                    key: 'Escape', code: 'Escape', keyCode: 27, which: 27, bubbles: true
+                });
+                doc.dispatchEvent(escEvent);
+                
+                // ක්‍රමය 2: Close sidebar බොත්තම හොයාගෙන click කිරීම (ෆෝන් වලට වඩාත් ගැලපේ)
+                var buttons = doc.querySelectorAll('button');
+                for (var i = 0; i < buttons.length; i++) {
+                    if (buttons[i].getAttribute('aria-label') === 'Close sidebar') {
+                        buttons[i].click();
+                        break;
+                    }
                 }
             </script>
             """,
@@ -240,7 +251,7 @@ elif choice == "කළමනාකරුට පමණයි (Admin)":
         st.write("---")
         st.subheader("දැනට ඇති භාණ්ඩ කළමනාකරණය (Edit & Delete)")
         
-        # --- Edit Product Form (පෙන්වන්නේ Edit බොත්තම එබුවහොත් පමණි) ---
+        # --- Edit Product Form ---
         if st.session_state.editing_index is not None:
             idx = st.session_state.editing_index
             if idx < len(st.session_state.products):
@@ -251,7 +262,7 @@ elif choice == "කළමනාකරුට පමණයි (Admin)":
                     e_name = st.text_input("නම", value=edit_prod['name'])
                     e_desc = st.text_area("විස්තරය", value=edit_prod['desc'])
                     e_price = st.text_input("මිල (රු.)", value=edit_prod['price'])
-                    e_image = st.file_uploader("අලුත් ඡායාරූපයක් අවශ්‍ය නම් පමණක් තෝරන්න (නැත්නම් පරණ එකම තියේවි)", type=["jpg", "png", "jpeg"])
+                    e_image = st.file_uploader("අලුත් ඡායාරූපයක් අවශ්‍ය නම් පමණක් තෝරන්න", type=["jpg", "png", "jpeg"])
 
                     colA, colB = st.columns(2)
                     submit_edit = colA.form_submit_button("සේව් කරන්න (Save)")

@@ -80,21 +80,34 @@ st.markdown("""
     
     .product-buttons a {
         flex: 1;
+        height: 85px; /* බටන් වල උස මොබයිල් ෆෝන් එකට වඩාත් ගැලපෙන ලෙස හැදුවා */
         display: flex;
         justify-content: center;
         align-items: center;
         text-decoration: none;
+        border-radius: 15px;
+        overflow: hidden; /* පින්තූරය ලොකු කරන විට බෝඩරයෙන් පිටතට යාම වැලැක්වීමට */
     }
+    
+    /* බෝඩර්ස් කෙලින්ම බටන් කොටුවටම (Container) ලබා දීම */
+    .btn-wa { border: 3px solid #25D366; }
+    .btn-call { border: 3px solid #FF8C00; }
     
     .product-buttons img {
         width: 100%;
-        height: 110px;
+        height: 100%;
         object-fit: contain;
-        border-radius: 15px;
     }
     
-    .btn-wa img { border: 3px solid #25D366; }
-    .btn-call img { border: 3px solid #FF8C00; }
+    /* WhatsApp බටන් එකේ පින්තූරය Zoom කර අකුරු පැහැදිලිව ලොකුවට පෙන්වීම */
+    .btn-wa img {
+        transform: scale(1.45);
+    }
+    
+    /* Call බටන් එකත් ලස්සනට ගැලපෙන්න පොඩ්ඩක් Zoom කරා */
+    .btn-call img {
+        transform: scale(1.15);
+    }
 
     /* Admin Panel එකේ සාමාන්‍ය කොටු සඳහා */
     div[data-testid="stVerticalBlockBorderWrapper"] {
@@ -182,7 +195,6 @@ header_html = f"""
         align-items: center;
         justify-content: center;
         padding: 3px; 
-        /* නිල් සහ තැඹිලි පාට දෙකම කලවම් වුණු Glow එකක් */
         box-shadow: -4px -4px 15px rgba(0, 191, 255, 0.4), 4px 4px 15px rgba(255, 165, 0, 0.4); 
     }}
     
@@ -191,7 +203,6 @@ header_html = f"""
         position: absolute;
         width: 200%;
         height: 200%;
-        /* තැඹිලි පාට */
         background: conic-gradient(transparent, transparent, transparent, #FFA500); 
         animation: spin-border 4s linear infinite;
     }}
@@ -201,7 +212,6 @@ header_html = f"""
         position: absolute;
         width: 200%;
         height: 200%;
-        /* අකුරු වල තියෙන ලා නිල් පාට */
         background: conic-gradient(transparent, transparent, transparent, #00BFFF); 
         animation: spin-border 4s linear infinite;
         animation-delay: -2s;

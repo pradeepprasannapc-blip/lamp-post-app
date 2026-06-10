@@ -56,14 +56,14 @@ if 'logged_in' not in st.session_state: st.session_state.logged_in = False
 if 'menu_selection' not in st.session_state: st.session_state.menu_selection = "භාණ්ඩ බලන්න (Home)"
 if 'editing_index' not in st.session_state: st.session_state.editing_index = None
 
-# --- නව Header එක (රතු බෝඩර් සහ අයිකන් නිවැරදි කර ඇත) ---
+# --- නව Header එක (WhatsApp කොළ පාට බෝඩර් සහ අයිකන් නිවැරදි කර ඇත) ---
 header_file = "header.png" if os.path.exists("header.png") else "header.jpg"
 header_b64 = get_image_base64(header_file)
 
 # පින්තූරය පසුබිමට දැමීම
 bg_style = f"background-image: url(data:image/png;base64,{header_b64}); background-size: cover; background-position: center;" if header_b64 else "background-color: #111;"
 
-# අකුරු සහ අයිකන් වෙන් කර HTML සැකසීම (JS නොමැතිව වඩාත් සාර්ථකව වැඩ කිරීමට)
+# අකුරු සහ අයිකන් වෙන් කර HTML සැකසීම (දැන් කිසිම අවුලක් නැත)
 text_elements = [
     ("✨", "icon"), (" ", "space"), 
     ("C", "letter"), ("H", "letter"), ("A", "letter"), ("T", "letter"), ("H", "letter"), ("U", "letter"), ("R", "letter"), ("A", "letter"), 
@@ -118,15 +118,16 @@ header_html = f"""
         text-shadow: 3px 3px 0 #000, -1px -1px 0 #000, 5px 5px 15px rgba(0,0,0,1);
     }}
 
-    /* අකුරු වලට පමණක් රතු පාට බෝඩර් එක සහ සුදු පාට දැමීම */
+    /* අකුරු වලට පමණක් කොළ පාට (WhatsApp Green) බෝඩර් එක සහ සුදු පාට දැමීම */
     #spin-text span.letter {{
         color: #FFFFFF;
-        -webkit-text-stroke: 2px #FF0000; /* රතු පාට බෝඩර් එක (Red Border) */
+        -webkit-text-stroke: 2px #25D366; /* WhatsApp පාට බෝඩර් එක */
     }}
 
-    /* Emojis වල ඔරිජිනල් පාට මැකී නොයාමට ඒවායින් බෝඩර් එක ඉවත් කිරීම */
+    /* Emojis වල ඔරිජිනල් පාට පෙනීමට */
     #spin-text span.icon {{
         -webkit-text-stroke: 0px; 
+        font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
     }}
 
     @keyframes spinFlip {{
@@ -143,6 +144,7 @@ header_html = f"""
     </div>
 </div>
 """
+# උස 240 දක්වා ලබා දී ඇත
 components.html(header_html, height=240)
 
 # --- Navigation Menu ---

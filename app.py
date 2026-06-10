@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import json
 import os
 import base64
@@ -55,16 +56,16 @@ if 'logged_in' not in st.session_state: st.session_state.logged_in = False
 if 'menu_selection' not in st.session_state: st.session_state.menu_selection = "භාණ්ඩ බලන්න (Home)"
 if 'editing_index' not in st.session_state: st.session_state.editing_index = None
 
-# --- නව Header එක (පින්තූරය + CSS Animation) ---
+# --- නව Header එක (ඔයාගේ පින්තූරය පසුබිමේ තබා අකුරු පමණක් දුවන ආකාරයට) ---
 header_file = "header.png" if os.path.exists("header.png") else "header.jpg"
 header_b64 = get_image_base64(header_file)
 
-# පින්තූරය තිබුණත් නැතත් වැඩ කරන ආකාරයට සකසා ඇත
-bg_style = f"background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(data:image/png;base64,{header_b64}) center/cover no-repeat;" if header_b64 else "background: #2C3E50;"
+# පින්තූරය පසුබිමට දැමීම (අකුරු පැහැදිලිව පෙනීමට 60% ක කළු පැහැති ආවරණයක් දමා ඇත)
+bg_style = f"background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url(data:image/png;base64,{header_b64}); background-size: cover; background-position: center;" if header_b64 else "background-color: #2C3E50;"
 
 header_html = f"""
 <style>
-    .header-bg {{
+    .header-image-container {{
         position: relative;
         width: 100%;
         height: 220px;
@@ -72,62 +73,35 @@ header_html = f"""
         border: 3px solid #5DADE2;
         box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         margin-bottom: 20px;
-        overflow: hidden;
         display: flex;
         align-items: center;
         justify-content: center;
         {bg_style}
     }}
     
-    .reveal-wrapper {{
-        position: relative;
-        display: inline-block;
-        overflow: hidden;
-    }}
-    
-    .reveal-text {{
-        color: #FFFFFF;
-        font-size: 32px;
+    .running-text {{
+        font-size: 34px;
         font-family: serif;
         font-weight: bold;
+        text-align: center;
         margin: 0;
-        padding: 5px 15px;
-        opacity: 0;
-        animation: showText 0.1s 0.75s forwards;
-        text-shadow: 2px 2px 5px rgba(0,0,0,0.9);
+        /* අකුරු ඇතුලෙන් දුවන වර්ණ රටාව (සුදු, රන්වන් සහ නිල් මිශ්‍රිත) */
+        background: linear-gradient(90deg, #ffffff, #F4D03F, #5DADE2, #ffffff, #F4D03F);
+        background-size: 300% 100%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: running-gradient 4s linear infinite;
+        filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.8));
     }}
     
-    /* නිල් පාට කොටුවෙන් මතු වන Animation එක */
-    .reveal-wrapper::after {{
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: #3498DB; 
-        transform-origin: left;
-        transform: scaleX(0);
-        animation: blockWipe 1.5s cubic-bezier(0.77, 0, 0.175, 1) forwards;
-    }}
-    
-    @keyframes blockWipe {{
-        0% {{ transform: scaleX(0); transform-origin: left; }}
-        50% {{ transform: scaleX(1); transform-origin: left; }}
-        50.1% {{ transform: scaleX(1); transform-origin: right; }}
-        100% {{ transform: scaleX(0); transform-origin: right; }}
-    }}
-    
-    @keyframes showText {{
-        0% {{ opacity: 0; }}
-        100% {{ opacity: 1; }}
+    @keyframes running-gradient {{
+        0% {{ background-position: 100% 0; }}
+        100% {{ background-position: -50% 0; }}
     }}
 </style>
 
-<div class="header-bg">
-    <div class="reveal-wrapper">
-        <h2 class="reveal-text">✨ CHATHURA GROUP 👥</h2>
-    </div>
+<div class="header-image-container">
+    <h2 class="running-text">✨ CHATHURA GROUP 👥</h2>
 </div>
 """
 st.markdown(header_html, unsafe_allow_html=True)

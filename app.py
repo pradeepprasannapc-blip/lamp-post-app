@@ -83,7 +83,6 @@ header_html = f"""
         width: 100%;
         height: 220px;
         border-radius: 15px;
-        /* මෙතනින් නිල් බෝඩර් එක අයින් කරලා ගිනි දළු පාට දිලිසෙන බෝඩර් එකක් දැම්මා */
         border: 3px solid #FF4500;
         box-shadow: 0 0 15px rgba(255, 69, 0, 0.6);
         margin-bottom: 20px;
@@ -111,13 +110,26 @@ header_html = f"""
         display: inline-block;
         opacity: 0;
         transform-origin: center;
+        /* මූලික කැරකෙන ඇනිමේෂන් එක */
         animation: spinFlip 5s infinite; 
     }}
 
+    /* අකුරු වලට පමණක් Fiery Effect එක ලබා දීම */
     #spin-text span.letter {{
-        color: #FFFFFF;
-        -webkit-text-stroke: 1.5px #5DADE2;
-        text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 4px 4px 10px rgba(0,0,0,0.8);
+        background: linear-gradient(0deg, #ff0000 0%, #ff8c00 50%, #ffd700 100%);
+        background-size: 100% 200%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        
+        /* කැරකෙන (spinFlip) සහ ගින්දර දුවන (fireFlow) ඇනිමේෂන් දෙකම එකට වැඩ කිරීමට */
+        animation-name: spinFlip, fireFlow;
+        animation-duration: 5s, 1.5s;
+        animation-iteration-count: infinite, infinite;
+        animation-timing-function: ease, linear;
+        animation-direction: normal, alternate;
+
+        /* ලස්සන Glow එකක් සහ අකුරු කැපී පෙනෙන්න කළු සෙවනැල්ලක් */
+        filter: drop-shadow(0px -2px 6px rgba(255,69,0,0.8)) drop-shadow(3px 3px 5px rgba(0,0,0,1));
     }}
 
     #spin-text span.icon {{
@@ -131,6 +143,11 @@ header_html = f"""
         15% {{ transform: rotateY(0deg) rotateX(0deg) scale(1); opacity: 1; }}
         85% {{ transform: rotateY(0deg) rotateX(0deg) scale(1); opacity: 1; }}
         100% {{ transform: rotateY(-90deg) rotateX(-90deg) scale(0.5); opacity: 0; }}
+    }}
+
+    @keyframes fireFlow {{
+        0% {{ background-position: 0% 100%; }}
+        100% {{ background-position: 0% 0%; }}
     }}
 </style>
 

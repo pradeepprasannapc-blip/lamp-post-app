@@ -56,12 +56,31 @@ if 'logged_in' not in st.session_state: st.session_state.logged_in = False
 if 'menu_selection' not in st.session_state: st.session_state.menu_selection = "භාණ්ඩ බලන්න (Home)"
 if 'editing_index' not in st.session_state: st.session_state.editing_index = None
 
-# --- නව Header එක (බෝල්ඩ් අකුරු සහ රන්වන් බෝඩර් එක සහිතව) ---
+# --- නව Header එක (රතු බෝඩර් සහ අයිකන් නිවැරදි කර ඇත) ---
 header_file = "header.png" if os.path.exists("header.png") else "header.jpg"
 header_b64 = get_image_base64(header_file)
 
 # පින්තූරය පසුබිමට දැමීම
 bg_style = f"background-image: url(data:image/png;base64,{header_b64}); background-size: cover; background-position: center;" if header_b64 else "background-color: #111;"
+
+# අකුරු සහ අයිකන් වෙන් කර HTML සැකසීම (JS නොමැතිව වඩාත් සාර්ථකව වැඩ කිරීමට)
+text_elements = [
+    ("✨", "icon"), (" ", "space"), 
+    ("C", "letter"), ("H", "letter"), ("A", "letter"), ("T", "letter"), ("H", "letter"), ("U", "letter"), ("R", "letter"), ("A", "letter"), 
+    (" ", "space"), 
+    ("G", "letter"), ("R", "letter"), ("O", "letter"), ("U", "letter"), ("P", "letter"), 
+    (" ", "space"), ("👥", "icon")
+]
+
+spans_html = ""
+for i, (char, char_type) in enumerate(text_elements):
+    delay = i * 0.1
+    if char_type == "space":
+        spans_html += f'<span style="animation-delay: {delay}s">&nbsp;</span>\n'
+    elif char_type == "icon":
+        spans_html += f'<span class="icon" style="animation-delay: {delay}s">{char}</span>\n'
+    else:
+        spans_html += f'<span class="letter" style="animation-delay: {delay}s">{char}</span>\n'
 
 header_html = f"""
 <style>
@@ -81,33 +100,33 @@ header_html = f"""
     }}
     
     #spin-text {{
-        /* අකුරු වල සයිස් එක සහ බෝල්ඩ් ගතිය (Arial Black වැනි මහත අකුරු) */
         font-size: clamp(26px, 8vw, 42px); 
         font-family: 'Arial Black', Impact, sans-serif;
         font-weight: 900;
-        color: #FFFFFF;
         letter-spacing: 2px;
-        
-        /* රන්වන් පැහැති (Golden Yellow) ලස්සන බෝඩර් එකක් */
-        -webkit-text-stroke: 2px #F4D03F;
-        
-        /* අකුරු පින්තූරයෙන් උඩට මතු වී පෙනීමට තද කළු සෙවනැල්ලක් */
-        text-shadow: 
-            3px 3px 0 #000,
-            -1px -1px 0 #000,  
-            5px 5px 15px rgba(0,0,0,1);
-            
         white-space: nowrap; 
         display: flex;
         flex-direction: row;
+        align-items: center;
     }}
 
     #spin-text span {{
         display: inline-block;
         opacity: 0;
         transform-origin: center;
-        /* අකුරු කැරකිලා එන ඇනිමේෂන් එක */
         animation: spinFlip 5s infinite; 
+        text-shadow: 3px 3px 0 #000, -1px -1px 0 #000, 5px 5px 15px rgba(0,0,0,1);
+    }}
+
+    /* අකුරු වලට පමණක් රතු පාට බෝඩර් එක සහ සුදු පාට දැමීම */
+    #spin-text span.letter {{
+        color: #FFFFFF;
+        -webkit-text-stroke: 2px #FF0000; /* රතු පාට බෝඩර් එක (Red Border) */
+    }}
+
+    /* Emojis වල ඔරිජිනල් පාට මැකී නොයාමට ඒවායින් බෝඩර් එක ඉවත් කිරීම */
+    #spin-text span.icon {{
+        -webkit-text-stroke: 0px; 
     }}
 
     @keyframes spinFlip {{
@@ -119,25 +138,10 @@ header_html = f"""
 </style>
 
 <div class="header-image-container">
-    <div id="spin-text"></div>
+    <div id="spin-text">
+        {spans_html}
+    </div>
 </div>
-
-<script>
-    const text = "✨ CHATHURA GROUP 👥";
-    const container = document.getElementById('spin-text');
-    
-    // Array.from භාවිතයෙන් Emoji අකුරු (??) වලට කැඩීම වළක්වා ඇත
-    Array.from(text).forEach((char, i) => {{
-        let span = document.createElement('span');
-        if(char === ' ') {{
-            span.innerHTML = '&nbsp;'; 
-        }} else {{
-            span.textContent = char;
-        }}
-        span.style.animationDelay = (i * 0.1) + 's';
-        container.appendChild(span);
-    }});
-</script>
 """
 components.html(header_html, height=240)
 

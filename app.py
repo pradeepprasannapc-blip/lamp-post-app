@@ -56,12 +56,12 @@ if 'logged_in' not in st.session_state: st.session_state.logged_in = False
 if 'menu_selection' not in st.session_state: st.session_state.menu_selection = "භාණ්ඩ බලන්න (Home)"
 if 'editing_index' not in st.session_state: st.session_state.editing_index = None
 
-# --- නව Header එක (ඔයාගේ පින්තූරය පසුබිමේ තබා අකුරු පමණක් දුවන ආකාරයට) ---
+# --- නව Header එක (ඔයා එවූ Shining Text Animation එක සහිතව) ---
 header_file = "header.png" if os.path.exists("header.png") else "header.jpg"
 header_b64 = get_image_base64(header_file)
 
-# පින්තූරය පසුබිමට දැමීම (අකුරු පැහැදිලිව පෙනීමට 60% ක කළු පැහැති ආවරණයක් දමා ඇත)
-bg_style = f"background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url(data:image/png;base64,{header_b64}); background-size: cover; background-position: center;" if header_b64 else "background-color: #2C3E50;"
+# පින්තූරය පසුබිමට දැමීම (අකුරු වල Shining එක කැපී පේන්න 70% ක අඳුරු ආවරණයක් දමා ඇත)
+bg_style = f"background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url(data:image/png;base64,{header_b64}); background-size: cover; background-position: center;" if header_b64 else "background-color: #111;"
 
 header_html = f"""
 <style>
@@ -79,29 +79,33 @@ header_html = f"""
         {bg_style}
     }}
     
-    .running-text {{
-        font-size: 34px;
+    .shining-text {{
+        font-size: 28px; /* ඔයා ඉල්ලූ පරිදි අකුරු මදක් කුඩා කර ඇත */
         font-family: serif;
         font-weight: bold;
         text-align: center;
         margin: 0;
-        /* අකුරු ඇතුලෙන් දුවන වර්ණ රටාව (සුදු, රන්වන් සහ නිල් මිශ්‍රිත) */
-        background: linear-gradient(90deg, #ffffff, #F4D03F, #5DADE2, #ffffff, #F4D03F);
-        background-size: 300% 100%;
+        padding: 0 10px;
+        /* රන්වන් පැහැති අකුරු මතින් සුදු පැහැති එළියක් දුවන රටාව */
+        background: linear-gradient(to right, #F4D03F 20%, #FFFFFF 50%, #F4D03F 80%);
+        background-size: 200% auto;
+        color: #000;
+        background-clip: text;
+        text-fill-color: transparent;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        animation: running-gradient 4s linear infinite;
-        filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.8));
+        animation: shine 3s linear infinite;
     }}
     
-    @keyframes running-gradient {{
-        0% {{ background-position: 100% 0; }}
-        100% {{ background-position: -50% 0; }}
+    @keyframes shine {{
+        to {{
+            background-position: -200% center;
+        }}
     }}
 </style>
 
 <div class="header-image-container">
-    <h2 class="running-text">✨ CHATHURA GROUP 👥</h2>
+    <h2 class="shining-text">✨ CHATHURA GROUP 👥</h2>
 </div>
 """
 st.markdown(header_html, unsafe_allow_html=True)

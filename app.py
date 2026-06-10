@@ -76,7 +76,7 @@ for i, (char, char_type) in enumerate(text_elements):
     else:
         spans_html += f'<span class="letter" style="animation-delay: {delay}s">{char}</span>\n'
 
-# වීඩියෝවේ ඇති ආකාරයේ Glowing Animated Border එක මෙහි අන්තර්ගත කර ඇත
+# වීඩියෝවේ ඇති ආකාරයේ පිරිසිදු Neon Animated Border එක මෙහි අන්තර්ගත කර ඇත
 header_html = f"""
 <style>
     /* පින්තූරය වටා ඇති Animated Border එක හදන ප්‍රධාන රාමුව */
@@ -91,29 +91,29 @@ header_html = f"""
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 4px; /* බෝඩර් එකේ ඝනකම */
-        box-shadow: 0 0 20px rgba(255, 69, 0, 0.6); /* ගිනි දළු පැහැති Glow එක */
+        padding: 3px; /* වීඩියෝ එකේ වගේ සිහින් බෝඩර් එකක් */
+        box-shadow: 0 0 10px rgba(255, 165, 0, 0.3); /* ඉතා මෘදු එළියක් පමණි */
     }}
     
-    /* බෝඩර් එක දිගේ දුවන එළිය (Spinning Light 1) */
+    /* බෝඩර් එක දිගේ දුවන එළිය (Neon Line 1) */
     .animated-border-wrapper::before {{
         content: '';
         position: absolute;
-        width: 150%;
-        height: 150%;
-        background: conic-gradient(transparent, transparent, transparent, #FF4500);
-        animation: spin-border 3s linear infinite;
+        width: 200%;
+        height: 200%;
+        background: conic-gradient(transparent, transparent, transparent, #FFA500);
+        animation: spin-border 4s linear infinite;
     }}
     
-    /* බෝඩර් එක දිගේ දුවන එළිය (Spinning Light 2 - අනිත් පැත්තෙන්) */
+    /* බෝඩර් එක දිගේ දුවන එළිය (Neon Line 2 - අනිත් පැත්තෙන්) */
     .animated-border-wrapper::after {{
         content: '';
         position: absolute;
-        width: 150%;
-        height: 150%;
-        background: conic-gradient(transparent, transparent, transparent, #FFD700);
-        animation: spin-border 3s linear infinite;
-        animation-delay: -1.5s;
+        width: 200%;
+        height: 200%;
+        background: conic-gradient(transparent, transparent, transparent, #FFA500);
+        animation: spin-border 4s linear infinite;
+        animation-delay: -2s;
     }}
     
     @keyframes spin-border {{
@@ -152,7 +152,6 @@ header_html = f"""
         display: inline-block;
         opacity: 0;
         transform-origin: center;
-        /* මූලික කැරකෙන ඇනිමේෂන් එක */
         animation: spinFlip 5s infinite; 
     }}
 
@@ -163,14 +162,12 @@ header_html = f"""
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         
-        /* කැරකෙන සහ ගින්දර දුවන ඇනිමේෂන් දෙකම එකට වැඩ කිරීමට */
         animation-name: spinFlip, fireFlow;
         animation-duration: 5s, 1.5s;
         animation-iteration-count: infinite, infinite;
         animation-timing-function: ease, linear;
         animation-direction: normal, alternate;
 
-        /* Glow එකක් සහ අකුරු කැපී පෙනෙන්න කළු සෙවනැල්ලක් */
         filter: drop-shadow(0px -2px 6px rgba(255,69,0,0.8)) drop-shadow(3px 3px 5px rgba(0,0,0,1));
     }}
 

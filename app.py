@@ -16,11 +16,6 @@ st.markdown("""
         padding: 15px !important;
         border: 2px solid #5D6D7E !important; 
     }
-    .subheader-card {
-        border: 3px solid #F4D03F; border-radius: 15px; padding: 10px;
-        box-shadow: 0 3px 10px rgba(244, 208, 63, 0.3); margin-bottom: 25px;
-        text-align: center; background-color: rgba(244, 208, 63, 0.05); 
-    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -56,14 +51,13 @@ if 'logged_in' not in st.session_state: st.session_state.logged_in = False
 if 'menu_selection' not in st.session_state: st.session_state.menu_selection = "භාණ්ඩ බලන්න (Home)"
 if 'editing_index' not in st.session_state: st.session_state.editing_index = None
 
-# --- නව Header එක (අකුරු ෆෝන් එකට ගැලපෙන ලෙස සාදා ඇත) ---
+# --- Header එක ---
 header_file = "header.png" if os.path.exists("header.png") else "header.jpg"
 header_b64 = get_image_base64(header_file)
 
 # පින්තූරය පසුබිමට දැමීම
 bg_style = f"background-image: url(data:image/png;base64,{header_b64}); background-size: cover; background-position: center;" if header_b64 else "background-color: #111;"
 
-# අකුරු සහ අයිකන් වෙන් කර HTML සැකසීම
 text_elements = [
     ("✨", "icon"), (" ", "space"), 
     ("C", "letter"), ("H", "letter"), ("A", "letter"), ("T", "letter"), ("H", "letter"), ("U", "letter"), ("R", "letter"), ("A", "letter"), 
@@ -100,7 +94,6 @@ header_html = f"""
     }}
     
     #spin-text {{
-        /* ෆෝන් ස්ක්‍රීන් එකට හරියටම ගැලපෙන්න සයිස් එක හැදුවා */
         font-size: clamp(16px, 6vw, 32px); 
         font-family: 'Arial Black', Impact, sans-serif;
         font-weight: 900;
@@ -120,18 +113,16 @@ header_html = f"""
         animation: spinFlip 5s infinite; 
     }}
 
-    /* අකුරු වලට පමණක් ලා නිල් පාට බෝඩර් එක සහ සුදු පාට දැමීම */
     #spin-text span.letter {{
         color: #FFFFFF;
-        -webkit-text-stroke: 1.5px #5DADE2; /* පින්තූරය වටේ තියෙන බෝඩර් එකේ පාට */
+        -webkit-text-stroke: 1.5px #5DADE2;
         text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 4px 4px 10px rgba(0,0,0,0.8);
     }}
 
-    /* Emojis වල ඔරිජිනල් පාට පෙනීමට */
     #spin-text span.icon {{
         -webkit-text-stroke: 0px transparent !important; 
         color: initial !important; 
-        filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.8)); /* අයිකන් වලට සාමාන්‍ය සෙවනැල්ලක් */
+        filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.8)); 
     }}
 
     @keyframes spinFlip {{
@@ -170,7 +161,59 @@ if choice == "කළමනාකරුට පමණයි (Admin)" and not st.se
 
 # --- Home Page ---
 if choice == "භාණ්ඩ බලන්න (Home)":
-    st.markdown("<div class='subheader-card'><h3 style='margin: 0; color: #3498DB;'>💎 අපගේ නවතම PRODUCTS 🛍️</h3></div>", unsafe_allow_html=True)
+    
+    # --- අලුත් Fiery Subheader (Motion පින්තූරය වැනි) ---
+    fire_subheader_html = """
+    <style>
+        .fire-card {
+            border: 2px solid #FF4500;
+            border-radius: 15px;
+            padding: 15px;
+            background: #0a0a0a;
+            text-align: center;
+            box-shadow: 0 0 15px rgba(255, 69, 0, 0.4), inset 0 0 20px rgba(255, 0, 0, 0.2);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .fire-text {
+            font-size: clamp(20px, 5.5vw, 32px);
+            font-family: 'Arial Black', Impact, sans-serif;
+            font-weight: 900;
+            margin: 0;
+            /* ගිනි දළු වැනි Gradient එක */
+            background: linear-gradient(0deg, #ff0000 0%, #ff8c00 50%, #ffd700 100%);
+            background-size: 100% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            /* ගින්දර ඉහළට යනවා වැනි Animation එක */
+            animation: fireFlow 1.5s infinite linear alternate;
+            filter: drop-shadow(0px -2px 6px rgba(255,69,0,0.8));
+        }
+        @keyframes fireFlow {
+            0% { background-position: 0% 100%; }
+            100% { background-position: 0% 0%; }
+        }
+        .fire-icon {
+            font-size: clamp(22px, 6vw, 35px);
+            display: inline-block;
+            animation: bounceGlow 2s infinite ease-in-out;
+        }
+        @keyframes bounceGlow {
+            0%, 100% { transform: translateY(0); filter: drop-shadow(0 0 5px rgba(255,140,0,0.5)); }
+            50% { transform: translateY(-5px); filter: drop-shadow(0 5px 15px rgba(255,215,0,0.9)); }
+        }
+    </style>
+    <div class="fire-card">
+        <span class="fire-icon">💎</span>
+        <span class="fire-text">අපගේ නවතම PRODUCTS</span>
+        <span class="fire-icon">🛍️</span>
+    </div>
+    """
+    st.markdown(fire_subheader_html, unsafe_allow_html=True)
+    
     if not st.session_state.products: st.info("දැනට භාණ්ඩ කිසිවක් ඇතුලත් කර නොමැත.")
     for idx, p in enumerate(st.session_state.products):
         with st.container(border=True):

@@ -7,32 +7,57 @@ import base64
 # --- App Configuration ---
 st.set_page_config(page_title="Chathura Group", page_icon="✨", layout="centered", initial_sidebar_state="collapsed")
 
-# --- Custom CSS (Products සඳහා Fiery Glowing Border එක) ---
+# --- Custom CSS (Products සඳහා දුවන Fiery Border එක) ---
 st.markdown("""
 <style>
-    /* භාණ්ඩ පෙන්වන කොටුව වටේට ගිනි දළු (Fire) බෝඩර් එක */
+    /* භාණ්ඩ (Products) පෙන්වන කොටුව වටේට දුවන Animated Border එක */
     div[data-testid="stVerticalBlockBorderWrapper"] {
+        position: relative !important;
+        overflow: hidden !important;
+        padding: 4px !important; /* බෝඩර් එකේ ඝනකම */
         border-radius: 15px !important;
-        padding: 15px !important;
-        background-color: rgba(0, 0, 0, 0.5) !important; /* බෝඩර් එක කැපී පෙනෙන්න අඳුරු පසුබිමක් */
-        border: 3px solid #FFD700 !important;
-        animation: fire-glow-border 1.5s infinite alternate ease-in-out;
+        border: none !important;
+        background: #000 !important;
+        box-shadow: 0 0 15px rgba(255, 69, 0, 0.4) !important;
+        margin-bottom: 15px !important;
+    }
+    
+    /* බෝඩර් එක දිගේ දුවන එළිය (Spinning Light 1) */
+    div[data-testid="stVerticalBlockBorderWrapper"]::before {
+        content: '' !important;
+        position: absolute !important;
+        top: -50% !important; left: -50% !important; 
+        width: 200% !important; height: 200% !important;
+        background: conic-gradient(transparent, transparent, transparent, #FF4500) !important;
+        animation: spin-product-border 4s linear infinite !important;
+        z-index: 0 !important;
+    }
+    
+    /* බෝඩර් එක දිගේ දුවන එළිය (Spinning Light 2) */
+    div[data-testid="stVerticalBlockBorderWrapper"]::after {
+        content: '' !important;
+        position: absolute !important;
+        top: -50% !important; left: -50% !important; 
+        width: 200% !important; height: 200% !important;
+        background: conic-gradient(transparent, transparent, transparent, #FFD700) !important;
+        animation: spin-product-border 4s linear infinite !important;
+        animation-delay: -2s !important;
+        z-index: 0 !important;
+    }
+    
+    @keyframes spin-product-border {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
     }
 
-    /* බෝඩර් එක දිලිසෙන (Pulse) ඇනිමේෂන් එක */
-    @keyframes fire-glow-border {
-        0% {
-            box-shadow: 0 0 8px #FFD700, 0 0 15px #FF8C00, inset 0 0 8px #FFD700;
-            border-color: #FFD700;
-        }
-        50% {
-            box-shadow: 0 0 15px #FF8C00, 0 0 30px #FF4500, inset 0 0 15px #FF8C00;
-            border-color: #FF8C00;
-        }
-        100% {
-            box-shadow: 0 0 8px #FFD700, 0 0 20px #FF4500, inset 0 0 10px #FFD700;
-            border-color: #FFD700;
-        }
+    /* Product විස්තර තියෙන ඇතුල් කොටුව (Background එක) */
+    div[data-testid="stVerticalBlockBorderWrapper"] > div[data-testid="stVerticalBlock"] {
+        background-color: #151515 !important; 
+        border-radius: 12px !important;
+        padding: 20px !important;
+        position: relative !important;
+        z-index: 1 !important;
+        height: 100% !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -94,7 +119,7 @@ for i, (char, char_type) in enumerate(text_elements):
     else:
         spans_html += f'<span class="letter" style="animation-delay: {delay}s">{char}</span>\n'
 
-# පිරිසිදු Neon Animated Border සහිත Header එක
+# පිරිසිදු Neon Animated Border සහ නිල්/සුදු අකුරු සහිත Header එක
 header_html = f"""
 <style>
     .animated-border-wrapper {{
@@ -169,19 +194,22 @@ header_html = f"""
         animation: spinFlip 5s infinite; 
     }}
 
+    /* අකුරු වලට නිල් සහ සුදු (Blue & White Mix) Effect එක ලබා දීම */
     #spin-text span.letter {{
-        background: linear-gradient(0deg, #ff0000 0%, #ff8c00 50%, #ffd700 100%);
+        background: linear-gradient(0deg, #0044ff 0%, #00bfff 50%, #ffffff 100%);
         background-size: 100% 200%;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+        -webkit-text-stroke: 1.5px #FFFFFF; /* සුදු පාටින් සිහින් බෝඩර් එකක් */
         
-        animation-name: spinFlip, fireFlow;
-        animation-duration: 5s, 1.5s;
+        animation-name: spinFlip, blueFlow;
+        animation-duration: 5s, 2s;
         animation-iteration-count: infinite, infinite;
         animation-timing-function: ease, linear;
         animation-direction: normal, alternate;
 
-        filter: drop-shadow(0px -2px 6px rgba(255,69,0,0.8)) drop-shadow(3px 3px 5px rgba(0,0,0,1));
+        /* නිල් පැහැති දිලිසෙන සෙවනැල්ලක් */
+        filter: drop-shadow(0px -2px 6px rgba(0, 191, 255, 0.8)) drop-shadow(3px 3px 5px rgba(0,0,0,1));
     }}
 
     #spin-text span.icon {{
@@ -197,7 +225,8 @@ header_html = f"""
         100% {{ transform: rotateY(-90deg) rotateX(-90deg) scale(0.5); opacity: 0; }}
     }}
 
-    @keyframes fireFlow {{
+    /* නිල් පාට ඉහළට යන ඇනිමේෂන් එක */
+    @keyframes blueFlow {{
         0% {{ background-position: 0% 100%; }}
         100% {{ background-position: 0% 0%; }}
     }}
@@ -286,6 +315,7 @@ if choice == "භාණ්ඩ බලන්න (Home)":
     
     if not st.session_state.products: st.info("දැනට භාණ්ඩ කිසිවක් ඇතුලත් කර නොමැත.")
     for idx, p in enumerate(st.session_state.products):
+        # Product Container එකට දැන් ඔටෝම අර Animated Fiery Border එක වැටෙනවා
         with st.container(border=True):
             st.subheader(p['name'])
             if p.get('image'): st.image(base64.b64decode(p['image']), use_column_width=True)

@@ -56,12 +56,12 @@ if 'logged_in' not in st.session_state: st.session_state.logged_in = False
 if 'menu_selection' not in st.session_state: st.session_state.menu_selection = "භාණ්ඩ බලන්න (Home)"
 if 'editing_index' not in st.session_state: st.session_state.editing_index = None
 
-# --- නව Header එක (ඔයා එවූ Shining Text Animation එක සහිතව) ---
+# --- නව Header එක (අකුරු දකුණේ සිට වමට දුවන ආකාරයට) ---
 header_file = "header.png" if os.path.exists("header.png") else "header.jpg"
 header_b64 = get_image_base64(header_file)
 
-# පින්තූරය පසුබිමට දැමීම (අකුරු වල Shining එක කැපී පේන්න 70% ක අඳුරු ආවරණයක් දමා ඇත)
-bg_style = f"background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url(data:image/png;base64,{header_b64}); background-size: cover; background-position: center;" if header_b64 else "background-color: #111;"
+# පින්තූරය පසුබිමට දැමීම (අඳුරු ගතිය ඉවත් කර ඇත)
+bg_style = f"background-image: url(data:image/png;base64,{header_b64}); background-size: cover; background-position: center;" if header_b64 else "background-color: #111;"
 
 header_html = f"""
 <style>
@@ -73,39 +73,42 @@ header_html = f"""
         border: 3px solid #5DADE2;
         box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         margin-bottom: 20px;
+        overflow: hidden; /* කොටුවෙන් පිටතට අකුරු යෑම වැළැක්වීමට */
         display: flex;
         align-items: center;
-        justify-content: center;
         {bg_style}
     }}
     
-    .shining-text {{
-        font-size: 28px; /* ඔයා ඉල්ලූ පරිදි අකුරු මදක් කුඩා කර ඇත */
-        font-family: serif;
-        font-weight: bold;
-        text-align: center;
-        margin: 0;
-        padding: 0 10px;
-        /* රන්වන් පැහැති අකුරු මතින් සුදු පැහැති එළියක් දුවන රටාව */
-        background: linear-gradient(to right, #F4D03F 20%, #FFFFFF 50%, #F4D03F 80%);
-        background-size: 200% auto;
-        color: #000;
-        background-clip: text;
-        text-fill-color: transparent;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        animation: shine 3s linear infinite;
+    .marquee-container {{
+        width: 100%;
+        overflow: hidden;
+        white-space: nowrap;
+        box-sizing: border-box;
     }}
     
-    @keyframes shine {{
-        to {{
-            background-position: -200% center;
-        }}
+    .running-text {{
+        display: inline-block;
+        font-size: 28px; /* අකුරු ප්‍රමාණය මදක් කුඩා කර ඇත */
+        font-family: serif;
+        font-weight: bold;
+        color: #FFFFFF;
+        margin: 0;
+        padding-left: 100%; /* දකුණු පසින් ආරම්භ වීමට */
+        /* පින්තූරය උඩ අකුරු පැහැදිලිව පෙනීමට කළු පැහැති සෙවනැල්ලක් (Shadow) */
+        text-shadow: 2px 2px 6px rgba(0,0,0,1), -1px -1px 4px rgba(0,0,0,0.8);
+        animation: scrollText 10s linear infinite; /* දුවන වේගය සහ රටාව */
+    }}
+    
+    @keyframes scrollText {{
+        0%   {{ transform: translateX(0); }}
+        100% {{ transform: translateX(-100%); }} /* වම් පසින් නොපෙනී යෑමට */
     }}
 </style>
 
 <div class="header-image-container">
-    <h2 class="shining-text">✨ CHATHURA GROUP 👥</h2>
+    <div class="marquee-container">
+        <h2 class="running-text">✨ CHATHURA GROUP 👥</h2>
+    </div>
 </div>
 """
 st.markdown(header_html, unsafe_allow_html=True)

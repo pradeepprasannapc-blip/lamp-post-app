@@ -162,10 +162,9 @@ for i, (char, char_type) in enumerate(text_elements):
     else:
         spans_html += f'<span class="letter" style="animation-delay: {delay}s">{char}</span>\n'
 
-# නිල් සහ සුදු පාට අකුරු සහිත Header එක
+# නිල් සහ තැඹිලි පාට Header එක
 header_html = f"""
 <style>
-    /* Iframe එකටම අදාළව Animation එක මෙතනත් දාන්න ඕන */
     @keyframes spin-border {{
         0% {{ transform: rotate(0deg); }}
         100% {{ transform: rotate(360deg); }}
@@ -183,7 +182,8 @@ header_html = f"""
         align-items: center;
         justify-content: center;
         padding: 3px; 
-        box-shadow: 0 0 10px rgba(255, 165, 0, 0.3); 
+        /* නිල් සහ තැඹිලි පාට දෙකම කලවම් වුණු Glow එකක් */
+        box-shadow: -4px -4px 15px rgba(0, 191, 255, 0.4), 4px 4px 15px rgba(255, 165, 0, 0.4); 
     }}
     
     .animated-border-wrapper::before {{
@@ -191,7 +191,8 @@ header_html = f"""
         position: absolute;
         width: 200%;
         height: 200%;
-        background: conic-gradient(transparent, transparent, transparent, #FFA500);
+        /* තැඹිලි පාට */
+        background: conic-gradient(transparent, transparent, transparent, #FFA500); 
         animation: spin-border 4s linear infinite;
     }}
     
@@ -200,7 +201,8 @@ header_html = f"""
         position: absolute;
         width: 200%;
         height: 200%;
-        background: conic-gradient(transparent, transparent, transparent, #FFA500);
+        /* අකුරු වල තියෙන ලා නිල් පාට */
+        background: conic-gradient(transparent, transparent, transparent, #00BFFF); 
         animation: spin-border 4s linear infinite;
         animation-delay: -2s;
     }}
@@ -238,7 +240,6 @@ header_html = f"""
         animation: spinFlip 5s infinite; 
     }}
 
-    /* අකුරු වලට නිල් සහ සුදු පාට (Icy Blue Glow) ලබා දීම */
     #spin-text span.letter {{
         background: linear-gradient(0deg, #0044ff 0%, #00bfff 50%, #ffffff 100%);
         background-size: 100% 200%;
@@ -359,18 +360,15 @@ if choice == "භාණ්ඩ බලන්න (Home)":
         st.info("දැනට භාණ්ඩ කිසිවක් ඇතුලත් කර නොමැත.")
         
     for idx, p in enumerate(st.session_state.products):
-        # WhatsApp සහ Call Buttons වල පින්තූර ලබා ගැනීම
         wa_b64 = get_image_base64("whatsapp_button.png")
         call_b64 = get_image_base64("call_now_1.png")
         
-        # HTML සඳහා දත්ත සකස් කිරීම
         img_html = f'<img class="prod-img" src="data:image/png;base64,{p["image"]}">' if p.get('image') else ''
         desc_html = p['desc'].replace('\n', '<br>')
         
         wa_html = f'<a href="https://wa.me/{WHATSAPP_NUM}?text=මට මේ product එක ගැන දැනගන්න ඕනි: {p["name"]}" target="_blank" class="btn-wa"><img src="data:image/png;base64,{wa_b64}"></a>' if wa_b64 else ''
         call_html = f'<a href="tel:{CALL_NUM}" class="btn-call"><img src="data:image/png;base64,{call_b64}"></a>' if call_b64 else ''
         
-        # Streamlit Container වෙනුවට අලුත්ම 100% වැඩ කරන Pure HTML Product Card එක
         prod_html = f"""
         <div class="product-neon-wrapper">
             <div class="product-inner-content">

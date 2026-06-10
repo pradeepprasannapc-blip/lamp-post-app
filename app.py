@@ -56,7 +56,7 @@ if 'logged_in' not in st.session_state: st.session_state.logged_in = False
 if 'menu_selection' not in st.session_state: st.session_state.menu_selection = "භාණ්ඩ බලන්න (Home)"
 if 'editing_index' not in st.session_state: st.session_state.editing_index = None
 
-# --- නව Header එක (ලොකු අකුරු, බෝඩර් සහ Emoji Fix එක සහිතව) ---
+# --- නව Header එක (බෝල්ඩ් අකුරු සහ රන්වන් බෝඩර් එක සහිතව) ---
 header_file = "header.png" if os.path.exists("header.png") else "header.jpg"
 header_b64 = get_image_base64(header_file)
 
@@ -81,16 +81,22 @@ header_html = f"""
     }}
     
     #spin-text {{
-        /* අකුරු වල සයිස් එක ලොකු කර ඇත */
-        font-size: clamp(24px, 7vw, 38px); 
-        font-family: serif;
-        font-weight: bold;
+        /* අකුරු වල සයිස් එක සහ බෝල්ඩ් ගතිය (Arial Black වැනි මහත අකුරු) */
+        font-size: clamp(26px, 8vw, 42px); 
+        font-family: 'Arial Black', Impact, sans-serif;
+        font-weight: 900;
         color: #FFFFFF;
+        letter-spacing: 2px;
         
-        /* සුදු අකුරු වටේට ලස්සන කළු පාට බෝඩර් එකක් සහ Shadow එකක් */
-        -webkit-text-stroke: 1.5px #000000;
-        text-shadow: 3px 3px 10px rgba(0,0,0,1);
+        /* රන්වන් පැහැති (Golden Yellow) ලස්සන බෝඩර් එකක් */
+        -webkit-text-stroke: 2px #F4D03F;
         
+        /* අකුරු පින්තූරයෙන් උඩට මතු වී පෙනීමට තද කළු සෙවනැල්ලක් */
+        text-shadow: 
+            3px 3px 0 #000,
+            -1px -1px 0 #000,  
+            5px 5px 15px rgba(0,0,0,1);
+            
         white-space: nowrap; 
         display: flex;
         flex-direction: row;

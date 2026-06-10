@@ -165,6 +165,12 @@ for i, (char, char_type) in enumerate(text_elements):
 # නිල් සහ සුදු පාට අකුරු සහිත Header එක
 header_html = f"""
 <style>
+    /* Iframe එකටම අදාළව Animation එක මෙතනත් දාන්න ඕන */
+    @keyframes spin-border {{
+        0% {{ transform: rotate(0deg); }}
+        100% {{ transform: rotate(360deg); }}
+    }}
+
     .animated-border-wrapper {{
         position: relative;
         width: 100%;

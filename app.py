@@ -56,11 +56,11 @@ if 'logged_in' not in st.session_state: st.session_state.logged_in = False
 if 'menu_selection' not in st.session_state: st.session_state.menu_selection = "භාණ්ඩ බලන්න (Home)"
 if 'editing_index' not in st.session_state: st.session_state.editing_index = None
 
-# --- නව Header එක (අකුරු එකින් එක කැරකිලා එන ආකාරයට සහ එකම පේළියේ) ---
+# --- නව Header එක (ලොකු අකුරු, බෝඩර් සහ Emoji Fix එක සහිතව) ---
 header_file = "header.png" if os.path.exists("header.png") else "header.jpg"
 header_b64 = get_image_base64(header_file)
 
-# පින්තූරය පසුබිමට දැමීම (අඳුරු ගතිය සම්පූර්ණයෙන්ම ඉවත් කර ඇත)
+# පින්තූරය පසුබිමට දැමීම
 bg_style = f"background-image: url(data:image/png;base64,{header_b64}); background-size: cover; background-position: center;" if header_b64 else "background-color: #111;"
 
 header_html = f"""
@@ -81,12 +81,16 @@ header_html = f"""
     }}
     
     #spin-text {{
-        /* ෆෝන් එකේ සයිස් එකට අනුව අකුරු ගානට හැදෙන්න සහ අනිවාර්යයෙන් එකම පේළියේ තියෙන්න */
-        font-size: clamp(16px, 5vw, 28px); 
+        /* අකුරු වල සයිස් එක ලොකු කර ඇත */
+        font-size: clamp(24px, 7vw, 38px); 
         font-family: serif;
         font-weight: bold;
         color: #FFFFFF;
-        text-shadow: 2px 2px 6px rgba(0,0,0,1), -1px -1px 4px rgba(0,0,0,0.8);
+        
+        /* සුදු අකුරු වටේට ලස්සන කළු පාට බෝඩර් එකක් සහ Shadow එකක් */
+        -webkit-text-stroke: 1.5px #000000;
+        text-shadow: 3px 3px 10px rgba(0,0,0,1);
+        
         white-space: nowrap; 
         display: flex;
         flex-direction: row;
@@ -113,19 +117,17 @@ header_html = f"""
 </div>
 
 <script>
-    // වචන සහ අයිකන් එකම පේළියේ තබා ගැනීම
     const text = "✨ CHATHURA GROUP 👥";
     const container = document.getElementById('spin-text');
     
-    // අකුරු එකින් එක වෙන් කර Animation එකට Delay එකක් දීම
-    text.split('').forEach((char, i) => {{
+    // Array.from භාවිතයෙන් Emoji අකුරු (??) වලට කැඩීම වළක්වා ඇත
+    Array.from(text).forEach((char, i) => {{
         let span = document.createElement('span');
         if(char === ' ') {{
-            span.innerHTML = '&nbsp;'; // හිස්තැන් සඳහා
+            span.innerHTML = '&nbsp;'; 
         }} else {{
             span.textContent = char;
         }}
-        // එක අකුරකට පසු ඊළඟ අකුර කැරකී ඒමට කාලය
         span.style.animationDelay = (i * 0.1) + 's';
         container.appendChild(span);
     }});

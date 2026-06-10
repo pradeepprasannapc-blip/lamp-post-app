@@ -76,20 +76,62 @@ for i, (char, char_type) in enumerate(text_elements):
     else:
         spans_html += f'<span class="letter" style="animation-delay: {delay}s">{char}</span>\n'
 
+# වීඩියෝවේ ඇති ආකාරයේ Glowing Animated Border එක මෙහි අන්තර්ගත කර ඇත
 header_html = f"""
 <style>
-    .header-image-container {{
+    /* පින්තූරය වටා ඇති Animated Border එක හදන ප්‍රධාන රාමුව */
+    .animated-border-wrapper {{
         position: relative;
         width: 100%;
         height: 220px;
         border-radius: 15px;
-        border: 3px solid #FF4500;
-        box-shadow: 0 0 15px rgba(255, 69, 0, 0.6);
+        background: #000;
         margin-bottom: 20px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 4px; /* බෝඩර් එකේ ඝනකම */
+        box-shadow: 0 0 20px rgba(255, 69, 0, 0.6); /* ගිනි දළු පැහැති Glow එක */
+    }}
+    
+    /* බෝඩර් එක දිගේ දුවන එළිය (Spinning Light 1) */
+    .animated-border-wrapper::before {{
+        content: '';
+        position: absolute;
+        width: 150%;
+        height: 150%;
+        background: conic-gradient(transparent, transparent, transparent, #FF4500);
+        animation: spin-border 3s linear infinite;
+    }}
+    
+    /* බෝඩර් එක දිගේ දුවන එළිය (Spinning Light 2 - අනිත් පැත්තෙන්) */
+    .animated-border-wrapper::after {{
+        content: '';
+        position: absolute;
+        width: 150%;
+        height: 150%;
+        background: conic-gradient(transparent, transparent, transparent, #FFD700);
+        animation: spin-border 3s linear infinite;
+        animation-delay: -1.5s;
+    }}
+    
+    @keyframes spin-border {{
+        0% {{ transform: rotate(0deg); }}
+        100% {{ transform: rotate(360deg); }}
+    }}
+
+    /* ඔරිජිනල් පින්තූරය සහ අකුරු තියෙන ඇතුල් කොටුව */
+    .header-image-container {{
+        position: relative;
+        width: 100%;
+        height: 100%;
+        border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
         overflow: hidden;
+        z-index: 10;
         {bg_style}
     }}
     
@@ -121,14 +163,14 @@ header_html = f"""
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         
-        /* කැරකෙන (spinFlip) සහ ගින්දර දුවන (fireFlow) ඇනිමේෂන් දෙකම එකට වැඩ කිරීමට */
+        /* කැරකෙන සහ ගින්දර දුවන ඇනිමේෂන් දෙකම එකට වැඩ කිරීමට */
         animation-name: spinFlip, fireFlow;
         animation-duration: 5s, 1.5s;
         animation-iteration-count: infinite, infinite;
         animation-timing-function: ease, linear;
         animation-direction: normal, alternate;
 
-        /* ලස්සන Glow එකක් සහ අකුරු කැපී පෙනෙන්න කළු සෙවනැල්ලක් */
+        /* Glow එකක් සහ අකුරු කැපී පෙනෙන්න කළු සෙවනැල්ලක් */
         filter: drop-shadow(0px -2px 6px rgba(255,69,0,0.8)) drop-shadow(3px 3px 5px rgba(0,0,0,1));
     }}
 
@@ -151,9 +193,11 @@ header_html = f"""
     }}
 </style>
 
-<div class="header-image-container">
-    <div id="spin-text">
-        {spans_html}
+<div class="animated-border-wrapper">
+    <div class="header-image-container">
+        <div id="spin-text">
+            {spans_html}
+        </div>
     </div>
 </div>
 """

@@ -83,8 +83,9 @@ header_html = f"""
         width: 100%;
         height: 220px;
         border-radius: 15px;
-        border: 3px solid #5DADE2;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        /* මෙතනින් නිල් බෝඩර් එක අයින් කරලා ගිනි දළු පාට දිලිසෙන බෝඩර් එකක් දැම්මා */
+        border: 3px solid #FF4500;
+        box-shadow: 0 0 15px rgba(255, 69, 0, 0.6);
         margin-bottom: 20px;
         display: flex;
         align-items: center;
@@ -162,7 +163,7 @@ if choice == "කළමනාකරුට පමණයි (Admin)" and not st.se
 # --- Home Page ---
 if choice == "භාණ්ඩ බලන්න (Home)":
     
-    # --- අලුත් Fiery Subheader (Motion පින්තූරය වැනි) ---
+    # --- Fiery Subheader ---
     fire_subheader_html = """
     <style>
         .fire-card {
@@ -183,12 +184,10 @@ if choice == "භාණ්ඩ බලන්න (Home)":
             font-family: 'Arial Black', Impact, sans-serif;
             font-weight: 900;
             margin: 0;
-            /* ගිනි දළු වැනි Gradient එක */
             background: linear-gradient(0deg, #ff0000 0%, #ff8c00 50%, #ffd700 100%);
             background-size: 100% 200%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            /* ගින්දර ඉහළට යනවා වැනි Animation එක */
             animation: fireFlow 1.5s infinite linear alternate;
             filter: drop-shadow(0px -2px 6px rgba(255,69,0,0.8));
         }

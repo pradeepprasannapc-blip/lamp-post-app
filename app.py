@@ -56,7 +56,7 @@ if 'logged_in' not in st.session_state: st.session_state.logged_in = False
 if 'menu_selection' not in st.session_state: st.session_state.menu_selection = "භාණ්ඩ බලන්න (Home)"
 if 'editing_index' not in st.session_state: st.session_state.editing_index = None
 
-# --- නව Header එක ---
+# --- නව Header එක (අකුරු ෆෝන් එකට ගැලපෙන ලෙස සාදා ඇත) ---
 header_file = "header.png" if os.path.exists("header.png") else "header.jpg"
 header_b64 = get_image_base64(header_file)
 
@@ -100,14 +100,17 @@ header_html = f"""
     }}
     
     #spin-text {{
-        font-size: clamp(26px, 8vw, 42px); 
+        /* ෆෝන් ස්ක්‍රීන් එකට හරියටම ගැලපෙන්න සයිස් එක හැදුවා */
+        font-size: clamp(16px, 6vw, 32px); 
         font-family: 'Arial Black', Impact, sans-serif;
         font-weight: 900;
-        letter-spacing: 2px;
+        letter-spacing: 1px;
         white-space: nowrap; 
         display: flex;
         flex-direction: row;
         align-items: center;
+        justify-content: center;
+        width: 100%;
     }}
 
     #spin-text span {{
@@ -120,15 +123,15 @@ header_html = f"""
     /* අකුරු වලට පමණක් ලා නිල් පාට බෝඩර් එක සහ සුදු පාට දැමීම */
     #spin-text span.letter {{
         color: #FFFFFF;
-        -webkit-text-stroke: 2px #5DADE2; /* පින්තූරය වටේ තියෙන බෝඩර් එකේ පාට (Light Blue) */
-        text-shadow: 3px 3px 0 #000, -1px -1px 0 #000, 5px 5px 15px rgba(0,0,0,1);
+        -webkit-text-stroke: 1.5px #5DADE2; /* පින්තූරය වටේ තියෙන බෝඩර් එකේ පාට */
+        text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 4px 4px 10px rgba(0,0,0,0.8);
     }}
 
     /* Emojis වල ඔරිජිනල් පාට පෙනීමට */
     #spin-text span.icon {{
         -webkit-text-stroke: 0px transparent !important; 
-        color: initial !important; /* Emojis වල පාට මැකී යාම වැළැක්වීමට */
-        text-shadow: 2px 2px 8px rgba(0,0,0,0.9); /* අයිකන් වලට සාමාන්‍ය සෙවනැල්ලක් */
+        color: initial !important; 
+        filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.8)); /* අයිකන් වලට සාමාන්‍ය සෙවනැල්ලක් */
     }}
 
     @keyframes spinFlip {{

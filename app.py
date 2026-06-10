@@ -7,14 +7,32 @@ import base64
 # --- App Configuration ---
 st.set_page_config(page_title="Chathura Group", page_icon="✨", layout="centered", initial_sidebar_state="collapsed")
 
-# --- Custom CSS ---
+# --- Custom CSS (Products සඳහා Fiery Glowing Border එක) ---
 st.markdown("""
 <style>
+    /* භාණ්ඩ පෙන්වන කොටුව වටේට ගිනි දළු (Fire) බෝඩර් එක */
     div[data-testid="stVerticalBlockBorderWrapper"] {
         border-radius: 15px !important;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2) !important;
         padding: 15px !important;
-        border: 2px solid #5D6D7E !important; 
+        background-color: rgba(0, 0, 0, 0.5) !important; /* බෝඩර් එක කැපී පෙනෙන්න අඳුරු පසුබිමක් */
+        border: 3px solid #FFD700 !important;
+        animation: fire-glow-border 1.5s infinite alternate ease-in-out;
+    }
+
+    /* බෝඩර් එක දිලිසෙන (Pulse) ඇනිමේෂන් එක */
+    @keyframes fire-glow-border {
+        0% {
+            box-shadow: 0 0 8px #FFD700, 0 0 15px #FF8C00, inset 0 0 8px #FFD700;
+            border-color: #FFD700;
+        }
+        50% {
+            box-shadow: 0 0 15px #FF8C00, 0 0 30px #FF4500, inset 0 0 15px #FF8C00;
+            border-color: #FF8C00;
+        }
+        100% {
+            box-shadow: 0 0 8px #FFD700, 0 0 20px #FF4500, inset 0 0 10px #FFD700;
+            border-color: #FFD700;
+        }
     }
 </style>
 """, unsafe_allow_html=True)
@@ -76,10 +94,9 @@ for i, (char, char_type) in enumerate(text_elements):
     else:
         spans_html += f'<span class="letter" style="animation-delay: {delay}s">{char}</span>\n'
 
-# වීඩියෝවේ ඇති ආකාරයේ පිරිසිදු Neon Animated Border එක මෙහි අන්තර්ගත කර ඇත
+# පිරිසිදු Neon Animated Border සහිත Header එක
 header_html = f"""
 <style>
-    /* පින්තූරය වටා ඇති Animated Border එක හදන ප්‍රධාන රාමුව */
     .animated-border-wrapper {{
         position: relative;
         width: 100%;
@@ -91,11 +108,10 @@ header_html = f"""
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 3px; /* වීඩියෝ එකේ වගේ සිහින් බෝඩර් එකක් */
-        box-shadow: 0 0 10px rgba(255, 165, 0, 0.3); /* ඉතා මෘදු එළියක් පමණි */
+        padding: 3px; 
+        box-shadow: 0 0 10px rgba(255, 165, 0, 0.3); 
     }}
     
-    /* බෝඩර් එක දිගේ දුවන එළිය (Neon Line 1) */
     .animated-border-wrapper::before {{
         content: '';
         position: absolute;
@@ -105,7 +121,6 @@ header_html = f"""
         animation: spin-border 4s linear infinite;
     }}
     
-    /* බෝඩර් එක දිගේ දුවන එළිය (Neon Line 2 - අනිත් පැත්තෙන්) */
     .animated-border-wrapper::after {{
         content: '';
         position: absolute;
@@ -121,7 +136,6 @@ header_html = f"""
         100% {{ transform: rotate(360deg); }}
     }}
 
-    /* ඔරිජිනල් පින්තූරය සහ අකුරු තියෙන ඇතුල් කොටුව */
     .header-image-container {{
         position: relative;
         width: 100%;
@@ -155,7 +169,6 @@ header_html = f"""
         animation: spinFlip 5s infinite; 
     }}
 
-    /* අකුරු වලට පමණක් Fiery Effect එක ලබා දීම */
     #spin-text span.letter {{
         background: linear-gradient(0deg, #ff0000 0%, #ff8c00 50%, #ffd700 100%);
         background-size: 100% 200%;

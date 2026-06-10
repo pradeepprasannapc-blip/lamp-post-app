@@ -7,57 +7,100 @@ import base64
 # --- App Configuration ---
 st.set_page_config(page_title="Chathura Group", page_icon="✨", layout="centered", initial_sidebar_state="collapsed")
 
-# --- Custom CSS (Products සඳහා දුවන Fiery Border එක) ---
+# --- Custom CSS ---
 st.markdown("""
 <style>
-    /* භාණ්ඩ (Products) පෙන්වන කොටුව වටේට දුවන Animated Border එක */
-    div[data-testid="stVerticalBlockBorderWrapper"] {
-        position: relative !important;
-        overflow: hidden !important;
-        padding: 4px !important; /* බෝඩර් එකේ ඝනකම */
-        border-radius: 15px !important;
-        border: none !important;
-        background: #000 !important;
-        box-shadow: 0 0 15px rgba(255, 69, 0, 0.4) !important;
-        margin-bottom: 15px !important;
-    }
-    
-    /* බෝඩර් එක දිගේ දුවන එළිය (Spinning Light 1) */
-    div[data-testid="stVerticalBlockBorderWrapper"]::before {
-        content: '' !important;
-        position: absolute !important;
-        top: -50% !important; left: -50% !important; 
-        width: 200% !important; height: 200% !important;
-        background: conic-gradient(transparent, transparent, transparent, #FF4500) !important;
-        animation: spin-product-border 4s linear infinite !important;
-        z-index: 0 !important;
-    }
-    
-    /* බෝඩර් එක දිගේ දුවන එළිය (Spinning Light 2) */
-    div[data-testid="stVerticalBlockBorderWrapper"]::after {
-        content: '' !important;
-        position: absolute !important;
-        top: -50% !important; left: -50% !important; 
-        width: 200% !important; height: 200% !important;
-        background: conic-gradient(transparent, transparent, transparent, #FFD700) !important;
-        animation: spin-product-border 4s linear infinite !important;
-        animation-delay: -2s !important;
-        z-index: 0 !important;
-    }
-    
-    @keyframes spin-product-border {
+    /* Global Keyframes */
+    @keyframes spin-border {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
     }
 
-    /* Product විස්තර තියෙන ඇතුල් කොටුව (Background එක) */
-    div[data-testid="stVerticalBlockBorderWrapper"] > div[data-testid="stVerticalBlock"] {
-        background-color: #151515 !important; 
-        border-radius: 12px !important;
-        padding: 20px !important;
-        position: relative !important;
-        z-index: 1 !important;
-        height: 100% !important;
+    /* Product පෙන්වන කොටුව සඳහා වූ විශේෂ Animated Neon Border එක */
+    .product-neon-wrapper {
+        position: relative;
+        width: 100%;
+        border-radius: 15px;
+        background: #000;
+        margin-bottom: 30px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 4px; /* බෝඩර් එකේ ඝනකම */
+        box-shadow: 0 0 15px rgba(255, 69, 0, 0.4);
+    }
+    
+    .product-neon-wrapper::before, .product-neon-wrapper::after {
+        content: '';
+        position: absolute;
+        width: 250%;
+        height: 250%;
+        background: conic-gradient(transparent, transparent, transparent, #FF4500);
+        animation: spin-border 4s linear infinite;
+        z-index: 0;
+    }
+    
+    .product-neon-wrapper::after {
+        background: conic-gradient(transparent, transparent, transparent, #FFD700);
+        animation-delay: -2s;
+    }
+    
+    .product-inner-content {
+        position: relative;
+        background: #111; /* භාණ්ඩයේ පසුබිම */
+        width: 100%;
+        height: 100%;
+        border-radius: 12px;
+        padding: 20px;
+        z-index: 10;
+        color: #fff;
+    }
+    
+    .product-inner-content h3 {
+        margin-top: 0;
+        color: #FFFFFF;
+        font-size: 24px;
+        font-weight: bold;
+        text-shadow: 2px 2px 5px rgba(0,0,0,0.8);
+    }
+    
+    .product-inner-content img.prod-img {
+        width: 100%;
+        border-radius: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #333;
+    }
+    
+    .product-buttons {
+        display: flex;
+        gap: 15px;
+        margin-top: 20px;
+    }
+    
+    .product-buttons a {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-decoration: none;
+    }
+    
+    .product-buttons img {
+        width: 100%;
+        height: 110px;
+        object-fit: contain;
+        border-radius: 15px;
+    }
+    
+    .btn-wa img { border: 3px solid #25D366; }
+    .btn-call img { border: 3px solid #FF8C00; }
+
+    /* Admin Panel එකේ සාමාන්‍ය කොටු සඳහා */
+    div[data-testid="stVerticalBlockBorderWrapper"] {
+        border-radius: 15px !important;
+        padding: 15px !important;
+        border: 2px solid #5D6D7E !important; 
     }
 </style>
 """, unsafe_allow_html=True)
@@ -119,7 +162,7 @@ for i, (char, char_type) in enumerate(text_elements):
     else:
         spans_html += f'<span class="letter" style="animation-delay: {delay}s">{char}</span>\n'
 
-# පිරිසිදු Neon Animated Border සහ නිල්/සුදු අකුරු සහිත Header එක
+# නිල් සහ සුදු පාට අකුරු සහිත Header එක
 header_html = f"""
 <style>
     .animated-border-wrapper {{
@@ -155,11 +198,6 @@ header_html = f"""
         animation: spin-border 4s linear infinite;
         animation-delay: -2s;
     }}
-    
-    @keyframes spin-border {{
-        0% {{ transform: rotate(0deg); }}
-        100% {{ transform: rotate(360deg); }}
-    }}
 
     .header-image-container {{
         position: relative;
@@ -194,13 +232,13 @@ header_html = f"""
         animation: spinFlip 5s infinite; 
     }}
 
-    /* අකුරු වලට නිල් සහ සුදු (Blue & White Mix) Effect එක ලබා දීම */
+    /* අකුරු වලට නිල් සහ සුදු පාට (Icy Blue Glow) ලබා දීම */
     #spin-text span.letter {{
         background: linear-gradient(0deg, #0044ff 0%, #00bfff 50%, #ffffff 100%);
         background-size: 100% 200%;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        -webkit-text-stroke: 1.5px #FFFFFF; /* සුදු පාටින් සිහින් බෝඩර් එකක් */
+        -webkit-text-stroke: 1.5px #FFFFFF;
         
         animation-name: spinFlip, blueFlow;
         animation-duration: 5s, 2s;
@@ -208,7 +246,6 @@ header_html = f"""
         animation-timing-function: ease, linear;
         animation-direction: normal, alternate;
 
-        /* නිල් පැහැති දිලිසෙන සෙවනැල්ලක් */
         filter: drop-shadow(0px -2px 6px rgba(0, 191, 255, 0.8)) drop-shadow(3px 3px 5px rgba(0,0,0,1));
     }}
 
@@ -225,7 +262,6 @@ header_html = f"""
         100% {{ transform: rotateY(-90deg) rotateX(-90deg) scale(0.5); opacity: 0; }}
     }}
 
-    /* නිල් පාට ඉහළට යන ඇනිමේෂන් එක */
     @keyframes blueFlow {{
         0% {{ background-position: 0% 100%; }}
         100% {{ background-position: 0% 0%; }}
@@ -313,21 +349,37 @@ if choice == "භාණ්ඩ බලන්න (Home)":
     """
     st.markdown(fire_subheader_html, unsafe_allow_html=True)
     
-    if not st.session_state.products: st.info("දැනට භාණ්ඩ කිසිවක් ඇතුලත් කර නොමැත.")
+    if not st.session_state.products: 
+        st.info("දැනට භාණ්ඩ කිසිවක් ඇතුලත් කර නොමැත.")
+        
     for idx, p in enumerate(st.session_state.products):
-        # Product Container එකට දැන් ඔටෝම අර Animated Fiery Border එක වැටෙනවා
-        with st.container(border=True):
-            st.subheader(p['name'])
-            if p.get('image'): st.image(base64.b64decode(p['image']), use_column_width=True)
-            st.write(f"**විස්තරය:** {p['desc']}")
-            st.write(f"**මිල:** රු. {p['price']}")
-            col1, col2 = st.columns(2)
-            wa_b64 = get_image_base64("whatsapp_button.png")
-            call_b64 = get_image_base64("call_now_1.png")
-            with col1:
-                if wa_b64: st.markdown(f'<a href="https://wa.me/{WHATSAPP_NUM}?text=මට මේ product එක ගැන දැනගන්න ඕනි: {p["name"]}" target="_blank" style="display:flex; justify-content:center; align-items:center; width:100%; height:110px; border: 3px solid #25D366; border-radius: 20px; text-decoration:none;"><img src="data:image/png;base64,{wa_b64}" style="width:85%; height:85%; object-fit:contain;"></a>', unsafe_allow_html=True)
-            with col2:
-                if call_b64: st.markdown(f'<a href="tel:{CALL_NUM}" style="display:flex; justify-content:center; align-items:center; width:100%; height:110px; border: 3px solid #FF8C00; border-radius: 20px; text-decoration:none;"><img src="data:image/png;base64,{call_b64}" style="width:85%; height:85%; object-fit:contain;"></a>', unsafe_allow_html=True)
+        # WhatsApp සහ Call Buttons වල පින්තූර ලබා ගැනීම
+        wa_b64 = get_image_base64("whatsapp_button.png")
+        call_b64 = get_image_base64("call_now_1.png")
+        
+        # HTML සඳහා දත්ත සකස් කිරීම
+        img_html = f'<img class="prod-img" src="data:image/png;base64,{p["image"]}">' if p.get('image') else ''
+        desc_html = p['desc'].replace('\n', '<br>')
+        
+        wa_html = f'<a href="https://wa.me/{WHATSAPP_NUM}?text=මට මේ product එක ගැන දැනගන්න ඕනි: {p["name"]}" target="_blank" class="btn-wa"><img src="data:image/png;base64,{wa_b64}"></a>' if wa_b64 else ''
+        call_html = f'<a href="tel:{CALL_NUM}" class="btn-call"><img src="data:image/png;base64,{call_b64}"></a>' if call_b64 else ''
+        
+        # Streamlit Container වෙනුවට අලුත්ම 100% වැඩ කරන Pure HTML Product Card එක
+        prod_html = f"""
+        <div class="product-neon-wrapper">
+            <div class="product-inner-content">
+                <h3>{p['name']}</h3>
+                {img_html}
+                <p style="font-size: 16px; margin-bottom: 10px; color: #ddd;"><strong>විස්තරය:</strong><br>{desc_html}</p>
+                <p style="font-size: 18px; color: #F4D03F; margin-bottom: 10px;"><strong>මිල:</strong> රු. {p['price']}</p>
+                <div class="product-buttons">
+                    {wa_html}
+                    {call_html}
+                </div>
+            </div>
+        </div>
+        """
+        st.markdown(prod_html, unsafe_allow_html=True)
 
 # --- Admin Page ---
 elif choice == "කළමනාකරුට පමණයි (Admin)":
